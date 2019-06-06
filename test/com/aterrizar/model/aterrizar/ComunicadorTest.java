@@ -1,4 +1,4 @@
-package com.aterrizar.model;
+package com.aterrizar.model.aterrizar;
 
 import com.aterrizar.enumerator.Destino;
 import com.aterrizar.enumerator.Ubicacion;
