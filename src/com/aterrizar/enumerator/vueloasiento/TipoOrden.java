@@ -8,46 +8,31 @@ public enum TipoOrden {
 
         @Override
         public int sort(VueloAsiento asientoIzquierda, VueloAsiento asientoDerecha) {
-            int resultadoComparacion = super.sort(asientoIzquierda, asientoDerecha);
-
-            if(resultadoComparacion == 0) {
-                Double precioDeAsientoA = asientoIzquierda.getAsiento().getPrecio();
-                Double precioDeAsientoB = asientoDerecha.getAsiento().getPrecio();
-
-                return precioDeAsientoA.compareTo(precioDeAsientoB);
-            }
-
-            return resultadoComparacion;
+            return super.ordenarPorTipoOPorSuperOferta(
+                    super.sort(asientoIzquierda, asientoDerecha)
+                    , asientoIzquierda.getAsiento().getPrecio()
+                    , asientoDerecha.getAsiento().getPrecio()
+            );
         }
     }
     , precioDescendente {
         @Override
         public int sort(VueloAsiento asientoIzquierda, VueloAsiento asientoDerecha) {
-            int resultadoComparacion = super.sort(asientoIzquierda, asientoDerecha);
-
-            if(resultadoComparacion == 0) {
-                Double precioDeAsientoA = asientoIzquierda.getAsiento().getPrecio();
-                Double precioDeAsientoB = asientoDerecha.getAsiento().getPrecio();
-
-                return precioDeAsientoB.compareTo(precioDeAsientoA);
-            }
-
-            return resultadoComparacion;
+            return super.ordenarPorTipoOPorSuperOferta(
+                    super.sort(asientoIzquierda, asientoDerecha)
+                    , asientoDerecha.getAsiento().getPrecio()
+                    , asientoIzquierda.getAsiento().getPrecio()
+            );
         }
     }
     , tiempoVuelo {
     	@Override
     	public int sort(VueloAsiento asientoIzquierda, VueloAsiento asientoDerecha) {
-    		int resultadoComparacion = super.sort(asientoIzquierda, asientoDerecha);
-    		
-    		 if(resultadoComparacion == 0) {
-    			 Double tiempoVueloAsientoA = asientoIzquierda.getVuelo().getTiempoVuelo();
-                 Double tiempoVueloAsientoB = asientoDerecha.getVuelo().getTiempoVuelo();
-
-                 return tiempoVueloAsientoA.compareTo(tiempoVueloAsientoB);
-             }
-    		 
-    		 return resultadoComparacion;
+            return super.ordenarPorTipoOPorSuperOferta(
+                    super.sort(asientoIzquierda, asientoDerecha)
+                    , asientoIzquierda.getVuelo().getTiempoVuelo()
+                    , asientoDerecha.getVuelo().getTiempoVuelo()
+            );
     	}
     }
     , popularidad {
@@ -62,5 +47,12 @@ public enum TipoOrden {
         } else {
             return 0;
         }
+    }
+
+    private int ordenarPorTipoOPorSuperOferta(int resultadoComparacionSuperOferta, Double a, Double b) {
+        if(resultadoComparacionSuperOferta == 0) {
+            return a.compareTo(b);
+        }
+        return resultadoComparacionSuperOferta;
     }
 }
