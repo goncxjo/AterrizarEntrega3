@@ -12,10 +12,11 @@ public class Vuelo {
 
     public Vuelo() {}
 
-    public Vuelo(Destino origen, Destino destino, Date fecha) {
+    public Vuelo(Destino origen, Destino destino, Date fecha, double tiempoVuelo) {
         this.origen = origen;
         this.destino = destino;
         this.fecha = fecha;
+        this.tiempoVuelo = tiempoVuelo;
     }
 
     public Destino getOrigen() {

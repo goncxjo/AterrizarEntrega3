@@ -25,7 +25,7 @@ public class AerolineaLanchitaProxy extends Aerolinea {
 
     @Override
     public Aerolinea filtrarAsientos(VueloAsientoFiltro filtro, Usuario usuario) throws ParametroVacioException {
-        ValidarParametros(filtro);
+        validarParametros(filtro);
         usuario.agregarFiltroAlHistorial(filtro);
 
         List<List<String>> asientosDisponibles = this.aerolineaLanchita.asientosDisponibles(
@@ -52,7 +52,7 @@ public class AerolineaLanchitaProxy extends Aerolinea {
         }
     }
 
-    private void ValidarParametros(VueloAsientoFiltro filtro) throws ParametroVacioException {
+    private void validarParametros(VueloAsientoFiltro filtro) throws ParametroVacioException {
         String origen = filtro.getOrigen().name();
         String destino = filtro.getDestino().name();
         String fecha = filtro.getFecha();
@@ -82,6 +82,7 @@ public class AerolineaLanchitaProxy extends Aerolinea {
          * [2] la clase en la que se encuentra el asiento (turista, ejecutiva o primera clase)
          * [3] la ubicación del asiento en el avión (ventana, centro o pasillo)
          * [4] el estado del asiento (reservado o disponible, por el momento solo se reciben vueloAsientos disponibles)
+         * [5] tiempo de vuelo estimado
          */
 
         Asiento asientoGenerado = getTipoAsientoPorCodigoLanchita(asiento.get(2));
@@ -98,6 +99,7 @@ public class AerolineaLanchitaProxy extends Aerolinea {
                         filtro.getOrigen()
                         , filtro.getDestino()
                         , DateHelper.parseToDate(filtro.getFecha())
+                        , Double.parseDouble(asiento.get(5))
                 )
                 , asientoGenerado
         );
