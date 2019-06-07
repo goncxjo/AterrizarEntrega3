@@ -8,7 +8,7 @@ public abstract class Asiento {
     protected double precio;
     protected Ubicacion ubicacion;
     protected Estado estado;
-    private boolean esSuperOferta = false;
+    protected boolean esSuperOferta = false;
 
     public Asiento() {}
 
