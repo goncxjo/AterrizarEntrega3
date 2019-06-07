@@ -34,7 +34,7 @@ public class UsuarioTest {
         VueloAsiento vueloAsiento = new VueloAsiento(
                 "LCH"
                 , "Lanchita"
-                , new Vuelo(Destino.BUE, Destino.MIA, DateHelper.parseToDate("13/05/2019"))
+                , new Vuelo(Destino.BUE, Destino.MIA, DateHelper.parseToDate("13/05/2019"), 12.0)
                 , new Ejecutivo("LCH 005-40", 50000, Ubicacion.Centro, Estado.Disponible)
         );
 
@@ -54,7 +54,7 @@ public class UsuarioTest {
         VueloAsiento vueloAsiento = new VueloAsiento(
                 "LCH"
                 , "Lanchita"
-                , new Vuelo(Destino.BUE, Destino.MIA, DateHelper.parseToDate("13/05/2019"))
+                , new Vuelo(Destino.BUE, Destino.MIA, DateHelper.parseToDate("13/05/2019"), 12.0)
                 , new Ejecutivo("LCH 005-40", 50000, Ubicacion.Centro, Estado.Disponible)
         );
 
