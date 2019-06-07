@@ -12,7 +12,7 @@ public class VueloAsientoFiltroBuilder {
     }
 
     public VueloAsientoFiltroBuilder agregarTipoAsiento(Asiento asiento) {
-        filtro.agregarTipoAsiento(asiento);
+        filtro.setTipoAsiento(asiento);
         return this;
     }
 
@@ -28,16 +28,6 @@ public class VueloAsientoFiltroBuilder {
 
     public VueloAsientoFiltroBuilder agregarFecha(String fecha) {
         filtro.setFecha(fecha);
-        return this;
-    }
-
-    public VueloAsientoFiltroBuilder agregarPrecioMinimo(double precio) {
-        filtro.setPrecioMinimo(precio);
-        return this;
-    }
-
-    public VueloAsientoFiltroBuilder agregarPrecioMaximo(double precio) {
-        filtro.setPrecioMaximo(precio);
         return this;
     }
 

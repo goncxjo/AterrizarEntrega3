@@ -14,10 +14,9 @@ public class Comunicador extends Aerolinea {
         this.aerolineaLanchitaProxy = aerolineaLanchitaProxy;
     }
 
+    @Override
     public Aerolinea filtrarAsientos(VueloAsientoFiltro filtro, Usuario usuario) throws ParametroVacioException {
-        agregarAsientosLanchita(filtro, usuario);
-
-        return this;
+        return agregarAsientosLanchita(filtro, usuario);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.aterrizar.model.aerolinea;
 
-import com.aterrizar.enumerator.vueloasiento.TipoOrden;
 import com.aterrizar.exception.AsientoNoDisponibleException;
 import com.aterrizar.exception.ParametroVacioException;
 import com.aterrizar.model.usuario.Usuario;
@@ -33,7 +32,7 @@ public abstract class Aerolinea {
     public Aerolinea buscarSuperOfertas(Usuario usuario) {
         for (VueloAsiento vueloAsiento : this.asientos) {
             if (usuario.puedeVerSuperOferta(vueloAsiento.getAsiento())) {
-                vueloAsiento.marcarComoSuperOferta();
+                vueloAsiento.getAsiento().marcarComoSuperOferta();
             }
         }
 
@@ -41,14 +40,4 @@ public abstract class Aerolinea {
     }
 
     public abstract void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException;
-
-    public Aerolinea OrdenarAsientosPor(TipoOrden tipoOrden) {
-        if(tipoOrden != null) {
-            tipoOrden = TipoOrden.superOferta;
-        }
-        this.asientos.sort(tipoOrden::sort);
-
-        return this;
-    }
-
 }

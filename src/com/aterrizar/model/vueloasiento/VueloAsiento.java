@@ -8,7 +8,6 @@ public class VueloAsiento {
     private String codigoAerolinea;
     private Vuelo vuelo;
     private Asiento asiento;
-    private boolean esSuperOferta = false;
 
     public VueloAsiento(String nombreAerolinea, String codigoAerolinea, Vuelo vuelo, Asiento asiento) {
         this.nombreAerolinea = nombreAerolinea;
@@ -53,9 +52,4 @@ public class VueloAsiento {
         this.asiento = asiento;
     }
 
-    public boolean esSuperOferta() { return esSuperOferta; }
-
-    public void marcarComoSuperOferta() {
-        this.esSuperOferta = true;
-    }
 }
