@@ -43,7 +43,7 @@ public abstract class Aerolinea {
     public abstract void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException;
 
     public Aerolinea OrdenarAsientosPor(TipoOrden tipoOrden) {
-        if(tipoOrden != null) {
+        if(tipoOrden == null) {
             tipoOrden = TipoOrden.superOferta;
         }
         this.asientos.sort(tipoOrden::sort);
