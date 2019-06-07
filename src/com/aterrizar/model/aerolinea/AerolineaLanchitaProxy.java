@@ -48,7 +48,7 @@ public class AerolineaLanchitaProxy extends Aerolinea {
             this.aerolineaLanchita.comprar(codigoAsiento);
             usuario.agregarVueloComprado(getVueloAsiento(codigoAsiento));
         } catch (AsientoLanchitaNoDisponibleException e) {
-            throw new AsientoNoDisponibleException("aerolinea Lanchita: " + e.getMessage());
+            throw new AsientoNoDisponibleException(this.nombre + ": " + e.getMessage());
         }
     }
 
@@ -84,14 +84,6 @@ public class AerolineaLanchitaProxy extends Aerolinea {
          * [4] el estado del asiento (reservado o disponible, por el momento solo se reciben vueloAsientos disponibles)
          * [5] tiempo de vuelo estimado
          */
-
-        Asiento asientoGenerado = getTipoAsientoPorCodigoLanchita(asiento.get(2));
-
-        asientoGenerado.setCodigoAsiento(asiento.get(0));
-        asientoGenerado.setPrecio(Double.parseDouble(asiento.get(1)) + usuario.getRecargo());
-        asientoGenerado.setUbicacion(Ubicacion.getUbicacionPorCodigoLanchita(asiento.get(3)));
-        asientoGenerado.setEstado(Estado.getEstadoPorCodigoLanchita(asiento.get(4)));
-
         return new VueloAsiento(
                 this.codigo
                 , this.nombre
@@ -101,29 +93,74 @@ public class AerolineaLanchitaProxy extends Aerolinea {
                         , DateHelper.parseToDate(filtro.getFecha())
                         , Double.parseDouble(asiento.get(5))
                 )
-                , asientoGenerado
+                , generarAsiento(asiento, usuario)
         );
     }
 
-    private Asiento getTipoAsientoPorCodigoLanchita(String codigoTipoAsiento) {
-
-        switch (codigoTipoAsiento) {
+    private Asiento generarAsiento(List<String> asiento, Usuario usuario) {
+        switch (asiento.get(2)) {
             case "E":
-                return new Ejecutivo();
+                return new Ejecutivo(
+                        asiento.get(0)
+                        , Double.parseDouble(asiento.get(1)) + usuario.getRecargo()
+                        , getUbicacionPorCodigo(asiento.get(3))
+                        , getEstadoPorCodigo(asiento.get(4))
+                );
             case "P":
-                return new PrimeraClase();
+                return new PrimeraClase(
+                        asiento.get(0)
+                        , Double.parseDouble(asiento.get(1)) + usuario.getRecargo()
+                        , getUbicacionPorCodigo(asiento.get(3))
+                        , getEstadoPorCodigo(asiento.get(4))
+                );
             case "T":
-                return new Turista();
+                return new Turista(
+                        asiento.get(0)
+                        , Double.parseDouble(asiento.get(1)) + usuario.getRecargo()
+                        , getUbicacionPorCodigo(asiento.get(3))
+                        , getEstadoPorCodigo(asiento.get(4))
+                );
             default:
                 return null;
         }
     }
 
-    private VueloAsiento getVueloAsiento(String codigoAsiento) {
-        return this.asientos
+    private Estado getEstadoPorCodigo(String inicial) {
+        switch (inicial) {
+            case "D":
+                return Estado.Disponible;
+            case "R":
+                return Estado.Reservado;
+            case "C":
+                return Estado.Comprado;
+            default:
+                return Estado.valueOf(inicial);
+        }
+    }
+
+    private Ubicacion getUbicacionPorCodigo(String inicial) {
+        switch (inicial) {
+            case "C":
+                return Ubicacion.Centro;
+            case "P":
+                return Ubicacion.Pasillo;
+            case "V":
+                return Ubicacion.Ventanilla;
+            default:
+                return Ubicacion.valueOf(inicial);
+        }
+    }
+
+    private VueloAsiento getVueloAsiento(String codigoAsiento) throws AsientoLanchitaNoDisponibleException {
+        Optional<VueloAsiento> vueloAsiento = this.asientos
                 .stream()
-                .filter(x -> x.getAsiento().getCodigoAsiento() == codigoAsiento)
-                .findFirst()
-                .get();
+                .filter(x -> x.getAsiento().getCodigoAsiento().equals(codigoAsiento))
+                .findFirst();
+
+        if(vueloAsiento.isPresent()) {
+            return vueloAsiento.get();
+        } else {
+            throw new AsientoLanchitaNoDisponibleException("El asiento no existe");
+        }
     }
 }
