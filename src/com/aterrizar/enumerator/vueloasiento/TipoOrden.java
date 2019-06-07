@@ -7,14 +7,14 @@ public enum TipoOrden {
     , precioAscendente {
 
         @Override
-        public int sort(VueloAsiento asientoIzq, VueloAsiento asientoDer) {
-            int resultadoComparacion = super.sort(asientoIzq, asientoDer);
+        public int sort(VueloAsiento asientoIzquierda, VueloAsiento asientoDerecha) {
+            int resultadoComparacion = super.sort(asientoIzquierda, asientoDerecha);
 
             if(resultadoComparacion == 0) {
-                Double a = asientoIzq.getAsiento().getPrecio();
-                Double b = asientoDer.getAsiento().getPrecio();
+                Double precioDeAsientoA = asientoIzquierda.getAsiento().getPrecio();
+                Double precioDeAsientoB = asientoDerecha.getAsiento().getPrecio();
 
-                return a.compareTo(b);
+                return precioDeAsientoA.compareTo(precioDeAsientoB);
             }
 
             return resultadoComparacion;
@@ -22,26 +22,42 @@ public enum TipoOrden {
     }
     , precioDescendente {
         @Override
-        public int sort(VueloAsiento asientoIzq, VueloAsiento asientoDer) {
-            int resultadoComparacion = super.sort(asientoIzq, asientoDer);
+        public int sort(VueloAsiento asientoIzquierda, VueloAsiento asientoDerecha) {
+            int resultadoComparacion = super.sort(asientoIzquierda, asientoDerecha);
 
             if(resultadoComparacion == 0) {
-                Double a = asientoIzq.getAsiento().getPrecio();
-                Double b = asientoDer.getAsiento().getPrecio();
+                Double precioDeAsientoA = asientoIzquierda.getAsiento().getPrecio();
+                Double precioDeAsientoB = asientoDerecha.getAsiento().getPrecio();
 
-                return b.compareTo(a);
+                return precioDeAsientoB.compareTo(precioDeAsientoA);
             }
 
             return resultadoComparacion;
         }
     }
-    , tiempoVuelo
-    , popularidad;
+    , tiempoVuelo {
+    	@Override
+    	public int sort(VueloAsiento asientoIzquierda, VueloAsiento asientoDerecha) {
+    		int resultadoComparacion = super.sort(asientoIzquierda, asientoDerecha);
+    		
+    		 if(resultadoComparacion == 0) {
+    			 Double tiempoVueloAsientoA = asientoIzquierda.getVuelo().getTiempoVuelo();
+                 Double tiempoVueloAsientoB = asientoDerecha.getVuelo().getTiempoVuelo();
+
+                 return tiempoVueloAsientoA.compareTo(tiempoVueloAsientoB);
+             }
+    		 
+    		 return resultadoComparacion;
+    	}
+    }
+    , popularidad {
+    	
+    };
 
     public int sort(VueloAsiento asientoIzq, VueloAsiento asientoDer) {
-        if(asientoIzq.esSuperOferta()) {
+        if(asientoIzq.getAsiento().esSuperOferta()) {
             return -1;
-        } else if (asientoDer.esSuperOferta()) {
+        } else if (asientoDer.getAsiento().esSuperOferta()) {
             return -1;
         } else {
             return 0;

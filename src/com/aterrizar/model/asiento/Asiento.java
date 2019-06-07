@@ -8,6 +8,7 @@ public abstract class Asiento {
     protected double precio;
     protected Ubicacion ubicacion;
     protected Estado estado;
+    private boolean esSuperOferta = false;
 
     public Asiento() {}
 
@@ -48,5 +49,11 @@ public abstract class Asiento {
 
     public void setEstado(Estado estado) {
         this.estado = estado;
+    }
+    
+    public boolean esSuperOferta() { return esSuperOferta; }
+
+    public void marcarComoSuperOferta() {
+        this.esSuperOferta = true;
     }
 }

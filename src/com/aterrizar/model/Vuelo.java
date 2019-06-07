@@ -8,6 +8,7 @@ public class Vuelo {
     private Destino origen;
     private Destino destino;
     private Date fecha;
+    private Double tiempoVuelo;
 
     public Vuelo() {}
 
@@ -36,8 +37,17 @@ public class Vuelo {
     public Date getFecha() {
         return fecha;
     }
-
+    
     public void setFecha(Date fecha) {
         this.fecha= fecha;
     }
+    
+    public Double getTiempoVuelo() {
+        return tiempoVuelo;
+    }
+    
+    public void setTiempoVuelo(Double tiempoVuelo) {
+        this.tiempoVuelo= tiempoVuelo;
+    }
+
 }

@@ -33,7 +33,7 @@ public abstract class Aerolinea {
     public Aerolinea buscarSuperOfertas(Usuario usuario) {
         for (VueloAsiento vueloAsiento : this.asientos) {
             if (usuario.puedeVerSuperOferta(vueloAsiento.getAsiento())) {
-                vueloAsiento.marcarComoSuperOferta();
+                vueloAsiento.getAsiento().marcarComoSuperOferta();
             }
         }
 
