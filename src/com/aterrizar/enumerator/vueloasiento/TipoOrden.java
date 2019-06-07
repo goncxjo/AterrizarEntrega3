@@ -55,4 +55,11 @@ public enum TipoOrden {
         }
         return resultadoComparacionSuperOferta;
     }
+
+    private int ordenarPorTipoOPorSuperOferta(int resultadoComparacionSuperOferta, Integer a, Integer b) {
+        if(resultadoComparacionSuperOferta == 0) {
+            return a.compareTo(b);
+        }
+        return resultadoComparacionSuperOferta;
+    }
 }
