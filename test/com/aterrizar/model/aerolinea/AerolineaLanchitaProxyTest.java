@@ -61,7 +61,7 @@ public class AerolineaLanchitaProxyTest {
 
         List<VueloAsiento> vueloAsientos = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
 
         assertFalse(vueloAsientos.isEmpty());
     }
@@ -85,7 +85,7 @@ public class AerolineaLanchitaProxyTest {
 
         List<VueloAsiento> vueloAsientos = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
 
         assertTrue(vueloAsientos.isEmpty());
     }
@@ -111,7 +111,7 @@ public class AerolineaLanchitaProxyTest {
 
         List<VueloAsiento> vueloAsientos = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
         Double precioTotal = (double) Math.round(vueloAsientos.get(0).getAsiento().getPrecio());
 
         // precio asiento = 100
@@ -133,7 +133,7 @@ public class AerolineaLanchitaProxyTest {
 
         doAnswer(invocationOnMock -> {
             when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
-                    .thenAnswer(i -> Arrays.asList(Arrays.asList(invocationOnMock.getArguments()[0],"1000.00","T","V","R", "11.0")));
+                    .thenAnswer(i -> Arrays.asList());
             this.aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
             return null;
         }).when(mockLanchita).comprar(codigoAsiento);
@@ -152,16 +152,13 @@ public class AerolineaLanchitaProxyTest {
 
         List<VueloAsiento> vueloAsientosAntesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
         this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
         List<VueloAsiento> vueloAsientosDespuesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
 
-        Asiento asientoAntesDeComprar = vueloAsientosAntesDeComprar.get(0).getAsiento();
-        Asiento asientoDespuesDeComprar = vueloAsientosDespuesDeComprar.get(0).getAsiento();
-
-        assertTrue("El asiento está disponible", asientoAntesDeComprar.getEstado().Disponible.equals(asientoDespuesDeComprar.getEstado().Disponible));
+        assertTrue("El asiento está disponible", !vueloAsientosAntesDeComprar.isEmpty() && vueloAsientosDespuesDeComprar.isEmpty());
     }
 
     @Test
@@ -194,13 +191,13 @@ public class AerolineaLanchitaProxyTest {
 
         List<VueloAsiento> vueloAsientosAntesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
 
         this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
 
         List<VueloAsiento> vueloAsientosDespuesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
 
         assertTrue("El asiento aún existe", !vueloAsientosAntesDeComprar.isEmpty() && vueloAsientosDespuesDeComprar.isEmpty());
     }
@@ -241,7 +238,7 @@ public class AerolineaLanchitaProxyTest {
         List<VueloAsiento> vueloAsientos = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
                 .OrdenarAsientosPor(TipoOrden.precioDescendente)
-                .getAsientos();
+                .getVueloAsientos();
 
         Double[] listaEsperada = { 2000.0, 1000.0, 500.0, 400.0, 400.0 };
         for (int i = 0; i < vueloAsientos.size(); i++) {
@@ -273,7 +270,7 @@ public class AerolineaLanchitaProxyTest {
         List<VueloAsiento> vueloAsientos = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
                 .OrdenarAsientosPor(TipoOrden.precioAscendente)
-                .getAsientos();
+                .getVueloAsientos();
 
         Double[] listaEsperada = { 400.0, 400.0, 500.0, 1000.0, 2000.0 };
         for (int i = 0; i < vueloAsientos.size(); i++) {
