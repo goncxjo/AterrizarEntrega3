@@ -211,10 +211,17 @@ public class AerolineaOceanicProxyTest {
 
     @Test
     public void comprarSiHayDisponibilidad_SeCompraAsientoDisponible() {
-
+        
+    	//Se cargan vuelos disponibles
+        when(mockOceanic.asientosDisponiblesParaOrigenYDestino("BUE", "31/12/1990","SLA"))
+                .thenReturn(this.generarAsientosDeBUEaSLA());
+        
+        //Se determina que vuelo de BUE a SLA  se puede comprar
         when(mockOceanic.comprarSiHayDisponibilidad(anyString(), eq("OCE 001"), eq(1)))
         .thenReturn(true);
-        
+ 
+    	aerolineaOceanicProxy = new AerolineaOceanicProxy(mockOceanic);
+    	
         //El asiento OCE 001 1 se pudo comprar
         assertTrue("El asiento OCE 001 1 no se pudo comprar",
                 mockOceanic.comprarSiHayDisponibilidad("40854236", "OCE 001", 1));
@@ -268,8 +275,8 @@ public class AerolineaOceanicProxyTest {
     //Generar asientos  Origen desde Buenos Aires con fecha "31/12/1990"
     public List<AsientoDTO> generarAsientosOrigen(){
         List<AsientoDTO> asientos = new ArrayList();
-        asientos.addAll(this.generarAsientosDeBUEaMEX());
         asientos.addAll(this.generarAsientosDeBUEaSLA());
+        asientos.addAll(this.generarAsientosDeBUEaMEX());
         return asientos;
     }
 }

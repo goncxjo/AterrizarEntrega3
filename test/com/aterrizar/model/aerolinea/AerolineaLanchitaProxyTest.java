@@ -150,7 +150,8 @@ public class AerolineaLanchitaProxyTest {
         List<VueloAsiento> vueloAsientosAntesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
                 .getAsientos();
-        this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
+        
+        this.aerolineaLanchitaProxy.comprar(codigoAsiento, null, usuario);
         List<VueloAsiento> vueloAsientosDespuesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
                 .getAsientos();
@@ -193,7 +194,7 @@ public class AerolineaLanchitaProxyTest {
                 .filtrarAsientos(filtro, usuario)
                 .getAsientos();
 
-        this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
+        this.aerolineaLanchitaProxy.comprar(codigoAsiento, null, usuario);
 
         List<VueloAsiento> vueloAsientosDespuesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
@@ -211,6 +212,6 @@ public class AerolineaLanchitaProxyTest {
         aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
         Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort)", 37422007);
 
-        this.aerolineaLanchitaProxy.comprar("LCH 622-12", usuario);
+        this.aerolineaLanchitaProxy.comprar("LCH 622-12", null, usuario);
     }
 }

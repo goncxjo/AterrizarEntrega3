@@ -78,13 +78,22 @@ public class AerolineaOceanicProxy extends Aerolinea {
 	}
 
 	@Override
-    public void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException {
-    /*    if ( this.aerolineaOceanic.comprar(codigoAsiento)) {
-            usuario.agregarVueloComprado(getVueloAsiento(codigoAsiento));
-        };*/
+    public void comprar(String codigoAsiento,Integer numeroAsiento, Usuario usuario) {
+		String dni = Integer.toString(usuario.getDNI());
+		
+       if ( this.aerolineaOceanic.comprarSiHayDisponibilidad(dni,codigoAsiento, numeroAsiento)) {
+            usuario.agregarVueloComprado(getVueloAsiento(codigoAsiento, numeroAsiento));
+        };
+        
+        
     }
 	
 	
+	private VueloAsiento getVueloAsiento(String codigoAsiento, Integer numeroAsiento) {
+		//Averiguar como obtener el numero de asiento dentro de la lista de VueloAsiento
+		return new VueloAsiento();
+	}
+
 	public boolean estaReservado(String codigoDeVuelo, Integer numeroDeAsiento) {
 		return this.aerolineaOceanic.estaReservado(codigoDeVuelo, numeroDeAsiento);
 	}
