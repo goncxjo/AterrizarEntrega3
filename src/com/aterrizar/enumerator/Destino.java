@@ -3,12 +3,13 @@ package com.aterrizar.enumerator;
 public enum Destino {
     BUE("Buenos Aires")
     , LA("Los Angeles")
-    , SLA("Los Angeles")
     , BAR("Barcelona")
     , MAD("Madrid")
     , TOK("Tokio")
     , BRA("Brasilia")
-    , MIA("Miami");
+    , MIA("Miami")
+    , SLA("Los Angeles")
+    , MEX("México");
 
     String nombre;
 

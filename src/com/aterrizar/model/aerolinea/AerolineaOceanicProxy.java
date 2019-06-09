@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.aterrizar.enumerator.Destino;
 import com.aterrizar.exception.AsientoLanchitaNoDisponibleException;
 import com.aterrizar.exception.AsientoNoDisponibleException;
 import com.aterrizar.exception.ParametroVacioException;
@@ -30,20 +31,21 @@ public class AerolineaOceanicProxy extends Aerolinea {
         usuario.agregarFiltroAlHistorial(filtro);
         
         
-       /* if(filtro.getDestino() == null) {
+       if(filtro.getDestino() == null) {
+    	   //Se obtienen asientos  con origen
             asientosDisponibles = this.aerolineaOceanic.asientosDisponiblesParaOrigen(
                     filtro.getOrigen().name()
                     , filtro.getFecha()
-            );*/
+            );
         	
-        //}else{
-
+        }else{
+        	//Se obtienen asientos con origen y destino
         	asientosDisponibles = this.aerolineaOceanic.
         							   asientosDisponiblesParaOrigenYDestino
         							   	(filtro.getOrigen().toString(), 
         							   	 filtro.getFecha(),
         							   	 filtro.getDestino().toString());
-        //}
+        }
         
 
         if(!asientosDisponibles.isEmpty()) {
@@ -81,9 +83,18 @@ public class AerolineaOceanicProxy extends Aerolinea {
             usuario.agregarVueloComprado(getVueloAsiento(codigoAsiento));
         };*/
     }
+	
+	@Override
+    protected void validarParametros(VueloAsientoFiltro filtro) throws ParametroVacioException {
+        Enum<Destino> origen = filtro.getOrigen();
+        String fecha = filtro.getFecha();
 
-	private VueloAsiento getVueloAsiento(String codigoAsiento) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        if(origen == null || origen.equals("")) {
+            throw new ParametroVacioException("El origen no puede estar vacío");
+        }
+
+        if(fecha == null || fecha.equals("")) {
+            throw new ParametroVacioException("La fecha no puede estar vacía");
+        }
+    }
 }

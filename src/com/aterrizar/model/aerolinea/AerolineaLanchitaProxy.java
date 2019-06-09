@@ -144,4 +144,21 @@ public class AerolineaLanchitaProxy extends Aerolinea {
             throw new AsientoLanchitaNoDisponibleException("El asiento no existe");
         }
     }
+    
+	@Override
+    protected void validarParametros(VueloAsientoFiltro filtro) throws ParametroVacioException {
+        String origen = filtro.getOrigen().name();
+        String destino = filtro.getDestino().name();
+        String fecha = filtro.getFecha();
+
+        if(origen == null || origen.equals("")) {
+            throw new ParametroVacioException("El origen no puede estar vacío");
+        }
+        if(destino == null || destino.equals("")) {
+            throw new ParametroVacioException("El destino no puede estar vacío");
+        }
+        if(fecha == null || fecha.equals("")) {
+            throw new ParametroVacioException("La fecha no puede estar vacía");
+        }
+    }
 }
