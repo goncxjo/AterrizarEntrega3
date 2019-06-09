@@ -84,6 +84,11 @@ public class AerolineaOceanicProxy extends Aerolinea {
         };*/
     }
 	
+	
+	public boolean estaReservado(String codigoDeVuelo, Integer numeroDeAsiento) {
+		return this.aerolineaOceanic.estaReservado(codigoDeVuelo, numeroDeAsiento);
+	}
+	
 	@Override
     protected void validarParametros(VueloAsientoFiltro filtro) throws ParametroVacioException {
         Enum<Destino> origen = filtro.getOrigen();

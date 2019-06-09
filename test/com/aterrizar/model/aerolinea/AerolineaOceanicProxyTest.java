@@ -187,19 +187,26 @@ public class AerolineaOceanicProxyTest {
     
     @Test
     public void estaReservado_asientoNoEstaReservado() {
-
+        //Se carga asiento no reservado
+    	when(mockOceanic.estaReservado("OCE 001", 1))
+        .thenReturn(false);
+    	
+    	aerolineaOceanicProxy = new AerolineaOceanicProxy(mockOceanic);
+    	
         //El asiento OCE 001 1 esta disponible
-        assertFalse("El asiento OCE 001 01 esta reservado",mockOceanic.estaReservado("OCE 001", 1));
+        assertFalse("El asiento OCE 001 01 esta reservado",aerolineaOceanicProxy.estaReservado("OCE 001", 1));
     }
 
     @Test
     public void estaReservado_asientoEstaReservado() {
-
+    	//Se carga asiento reservado
         when(mockOceanic.estaReservado("OCE 010", 1))
         .thenReturn(true);
         
+    	aerolineaOceanicProxy = new AerolineaOceanicProxy(mockOceanic);
+        
         //El asiento OCE 010 1 esta reservado
-        assertTrue("El asiento OCE 010 01 no esta reservado",mockOceanic.estaReservado("OCE 010", 1));
+        assertTrue("El asiento OCE 010 01 no esta reservado",aerolineaOceanicProxy.estaReservado("OCE 010", 1));
     }
 
     @Test
