@@ -39,7 +39,7 @@ public abstract class Aerolinea {
         return this;
     }
 
-    public abstract void comprar(String codigoAsiento, Integer numeroAsiento, Usuario usuario) throws AsientoNoDisponibleException;
+    public abstract void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException;
 
     protected void validarParametros(VueloAsientoFiltro filtro) throws ParametroVacioException {};
 }

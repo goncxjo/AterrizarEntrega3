@@ -130,7 +130,7 @@ public class AerolineaLanchitaProxyTest {
 
         doAnswer(invocationOnMock -> {
             when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
-                    .thenAnswer(i -> Arrays.asList(Arrays.asList(invocationOnMock.getArguments()[0],"1000.00","T","V","R")));
+                    .thenAnswer(i -> Arrays.asList());
             this.aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
             return null;
         }).when(mockLanchita).comprar(codigoAsiento);
@@ -151,15 +151,13 @@ public class AerolineaLanchitaProxyTest {
                 .filtrarAsientos(filtro, usuario)
                 .getAsientos();
         
-        this.aerolineaLanchitaProxy.comprar(codigoAsiento, null, usuario);
+        this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
+
         List<VueloAsiento> vueloAsientosDespuesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
                 .getAsientos();
 
-        Asiento asientoAntesDeComprar = vueloAsientosAntesDeComprar.get(0).getAsiento();
-        Asiento asientoDespuesDeComprar = vueloAsientosDespuesDeComprar.get(0).getAsiento();
-
-        assertTrue("El asiento está disponible", asientoAntesDeComprar.getEstado().Disponible.equals(asientoDespuesDeComprar.getEstado().Disponible));
+        assertTrue("El asiento está disponible", !vueloAsientosAntesDeComprar.isEmpty() && vueloAsientosDespuesDeComprar.isEmpty());
     }
 
     @Test
@@ -194,7 +192,7 @@ public class AerolineaLanchitaProxyTest {
                 .filtrarAsientos(filtro, usuario)
                 .getAsientos();
 
-        this.aerolineaLanchitaProxy.comprar(codigoAsiento, null, usuario);
+        this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
 
         List<VueloAsiento> vueloAsientosDespuesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
@@ -212,6 +210,6 @@ public class AerolineaLanchitaProxyTest {
         aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
         Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort)", 37422007);
 
-        this.aerolineaLanchitaProxy.comprar("LCH 622-12", null, usuario);
+        this.aerolineaLanchitaProxy.comprar("LCH 622-12", usuario);
     }
 }

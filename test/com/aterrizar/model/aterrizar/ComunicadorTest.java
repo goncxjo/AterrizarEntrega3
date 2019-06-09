@@ -94,7 +94,7 @@ public class ComunicadorTest {
 				.getAsientos()
 				.get(0);
 
-		this.comunicador.comprar(vueloAsiento.getAsiento().getCodigoAsiento(), null, usuario);
+		this.comunicador.comprar(vueloAsiento.getAsiento().getCodigoAsiento(), usuario);
 
 		List<VueloAsiento> asientosLuegoDeComprar = comunicador
 				.filtrarAsientos(filtro, usuario)
