@@ -16,13 +16,7 @@ public class AsientoDTO {
     private Asiento claseAsiento;
     private Ubicacion ubicacion;
 
-    public AsientoDTO(String codigoVuelo,
-                      Integer numeroAsiento,
-                      Date fechaSalida,
-                      Time horaSalida,
-                      double precio,
-                      Asiento claseAsiento,
-                      Ubicacion ubicacion) {
+    public AsientoDTO(String codigoVuelo, Integer numeroAsiento, Date fechaSalida, Time horaSalida, double precio, Asiento claseAsiento, Ubicacion ubicacion) {
 
         this.codigoVuelo = codigoVuelo;
         this.numeroAsiento = numeroAsiento;
@@ -59,16 +53,5 @@ public class AsientoDTO {
 
     public Ubicacion getUbicacion() {
         return ubicacion;
-    }
-
-    public List<String> getAsiento() {
-
-        return Arrays.asList(codigoVuelo.toString(),
-                numeroAsiento.toString(),
-                fechaSalida.toString(),
-                //horaSalida.toString(),
-                String.format("%1$,.2f", precio),
-                claseAsiento.toString(),
-                ubicacion.toString());
     }
 }

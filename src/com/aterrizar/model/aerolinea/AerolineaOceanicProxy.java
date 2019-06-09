@@ -1,20 +1,22 @@
 package com.aterrizar.model.aerolinea;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.aterrizar.enumerator.Destino;
+import com.aterrizar.enumerator.asiento.Estado;
 import com.aterrizar.exception.AsientoLanchitaNoDisponibleException;
 import com.aterrizar.exception.AsientoNoDisponibleException;
+import com.aterrizar.exception.AsientoOceanicNoDisponibleException;
 import com.aterrizar.exception.ParametroVacioException;
 import com.aterrizar.model.Vuelo;
-import com.aterrizar.model.asiento.Asiento;
-import com.aterrizar.model.asiento.AsientoDTO;
+import com.aterrizar.model.asiento.*;
 import com.aterrizar.model.usuario.Usuario;
 import com.aterrizar.model.vueloasiento.VueloAsiento;
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltro;
 import com.aterrizar.util.date.DateHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class AerolineaOceanicProxy extends Aerolinea {
     private AerolineaOceanic aerolineaOceanic;
@@ -26,37 +28,34 @@ public class AerolineaOceanicProxy extends Aerolinea {
 
     @Override
     public Aerolinea filtrarAsientos(VueloAsientoFiltro filtro, Usuario usuario) throws ParametroVacioException {
-    	List<AsientoDTO> asientosDisponibles = new ArrayList<AsientoDTO>();
-    	validarParametros(filtro);
+        validarParametros(filtro);
         usuario.agregarFiltroAlHistorial(filtro);
-        
-        
-       if(filtro.getDestino() == null) {
-    	   //Se obtienen asientos  con origen
+
+        List<AsientoDTO> asientosDisponibles;
+        if(filtro.getDestino() == null) {
+           //Se obtienen asientos  con origen
             asientosDisponibles = this.aerolineaOceanic.asientosDisponiblesParaOrigen(
                     filtro.getOrigen().name()
                     , filtro.getFecha()
             );
-        	
-        }else{
-        	//Se obtienen asientos con origen y destino
-        	asientosDisponibles = this.aerolineaOceanic.
-        							   asientosDisponiblesParaOrigenYDestino
-        							   	(filtro.getOrigen().toString(), 
-        							   	 filtro.getFecha(),
-        							   	 filtro.getDestino().toString());
+        } else {
+            //Se obtienen asientos con origen y destino
+            asientosDisponibles = this.aerolineaOceanic.asientosDisponiblesParaOrigenYDestino(
+                    filtro.getOrigen().toString()
+                    , filtro.getFecha()
+                    , filtro.getDestino().toString()
+            );
         }
-        
 
         if(!asientosDisponibles.isEmpty()) {
-           mapearAsientos(filtro, usuario, asientosDisponibles);
+           mapearAsientos(filtro, asientosDisponibles, usuario);
         }
 
         return this;
     }
 
 
-	private void mapearAsientos(VueloAsientoFiltro filtro, Usuario usuario, List<AsientoDTO> asientosDisponibles) {
+	private void mapearAsientos(VueloAsientoFiltro filtro, List<AsientoDTO> asientosDisponibles, Usuario usuario) {
         this.asientos = asientosDisponibles
                 .stream()
                 .map(asiento -> generarVueloAsiento(asiento, filtro, usuario))
@@ -65,6 +64,18 @@ public class AerolineaOceanicProxy extends Aerolinea {
 	}
 
 	private VueloAsiento generarVueloAsiento(AsientoDTO asiento, VueloAsientoFiltro filtro, Usuario usuario) {
+        /*
+         * AsientoDTO:
+         * ---------------------------------------------------------------------------------
+         * Código de vuelo (String)
+         * Número de asiento (Integer)
+         * Fecha de salida (formato “dd/MM/AAAA”)
+         * Hora de salida (formato “hh:mm”)
+         * El precio definido por la aerolínea para ese asiento
+         * La clase en la que se encuentra el asiento (turista, ejecutiva o primera clase)
+         * La ubicación del asiento en el avión (ventana, centro o pasillo)
+         * ---------------------------------------------------------------------------------
+         * */
         return new VueloAsiento(
                 this.codigo
                 , this.nombre
@@ -73,25 +84,47 @@ public class AerolineaOceanicProxy extends Aerolinea {
                         , filtro.getDestino()
                         , DateHelper.parseToDate(filtro.getFecha())
                 )
-                , asiento.getClaseAsiento()
+                , generarAsiento(asiento, usuario)
         );
 	}
 
+    private Asiento generarAsiento(AsientoDTO asiento, Usuario usuario) {
+        Asiento asientoGenerado = asiento.getClaseAsiento();
+
+        asientoGenerado.setEstado(Estado.Disponible);
+        asientoGenerado.setUbicacion(asiento.getUbicacion());
+        asientoGenerado.setPrecio(asiento.getPrecio() + usuario.getRecargo());
+        asientoGenerado.setCodigoAsiento(asiento.getCodigoVuelo() + "-" + asiento.getNumeroAsiento());
+
+        return asientoGenerado;
+    }
+
 	@Override
-    public void comprar(String codigoAsiento,Integer numeroAsiento, Usuario usuario) {
-		String dni = Integer.toString(usuario.getDNI());
-		
-       if ( this.aerolineaOceanic.comprarSiHayDisponibilidad(dni,codigoAsiento, numeroAsiento)) {
-            usuario.agregarVueloComprado(getVueloAsiento(codigoAsiento, numeroAsiento));
-        };
-        
-        
+    public void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException {
+        String dni = Integer.toString(usuario.getDNI());
+        String codigoVuelo = codigoAsiento.split("-")[0];
+        Integer numeroAsiento = Integer.parseInt(codigoAsiento.split("-")[1]);
+
+        try {
+            this.aerolineaOceanic.comprarSiHayDisponibilidad(dni, codigoVuelo, numeroAsiento);
+            usuario.agregarVueloComprado(getVueloAsiento(codigoAsiento));
+        } catch (AsientoOceanicNoDisponibleException e) {
+            throw new AsientoNoDisponibleException(this.nombre + ": " + e.getMessage());
+        }
     }
 	
 	
-	private VueloAsiento getVueloAsiento(String codigoAsiento, Integer numeroAsiento) {
-		//Averiguar como obtener el numero de asiento dentro de la lista de VueloAsiento
-		return new VueloAsiento();
+	private VueloAsiento getVueloAsiento(String codigoAsiento) throws AsientoOceanicNoDisponibleException {
+        Optional<VueloAsiento> vueloAsiento = this.asientos
+                .stream()
+                .filter(x -> x.getAsiento().getCodigoAsiento().equals(codigoAsiento))
+                .findFirst();
+
+        if(vueloAsiento.isPresent()) {
+            return vueloAsiento.get();
+        } else {
+            throw new AsientoOceanicNoDisponibleException("El asiento no existe");
+        }
 	}
 
 	public boolean estaReservado(String codigoDeVuelo, Integer numeroDeAsiento) {

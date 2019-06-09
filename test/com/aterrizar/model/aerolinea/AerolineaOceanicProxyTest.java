@@ -40,14 +40,12 @@ public class AerolineaOceanicProxyTest {
     @Mock private AerolineaOceanic mockOceanic;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
-       }
-
+    }
 
     @Test
     public void asientosDisponiblesParaOrigen_ObtenerTodosAsientosDesdeBUE() throws ParametroVacioException {
-
         //Asientos disponibles con vuelos desde Buenos Aires
         when(mockOceanic.asientosDisponiblesParaOrigen("BUE", "31/12/1990"))
                 .thenReturn(this.generarAsientosOrigen());
