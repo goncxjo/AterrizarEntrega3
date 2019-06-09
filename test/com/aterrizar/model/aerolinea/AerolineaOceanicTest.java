@@ -6,18 +6,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.aterrizar.enumerator.Destino;
 import com.aterrizar.enumerator.Ubicacion;
-import com.aterrizar.exception.ParametroVacioException;
 import com.aterrizar.model.asiento.AsientoDTO;
 import com.aterrizar.model.asiento.Ejecutivo;
 import com.aterrizar.model.asiento.PrimeraClase;
 import com.aterrizar.model.asiento.Turista;
-import com.aterrizar.model.usuario.NoRegistrado;
-import com.aterrizar.model.usuario.Usuario;
-import com.aterrizar.model.vueloasiento.VueloAsiento;
-import com.aterrizar.model.vueloasiento.VueloAsientoFiltro;
-import com.aterrizar.model.vueloasiento.VueloAsientoFiltroBuilder;
 import com.aterrizar.util.date.DateHelper;
 
 import junit.framework.Assert;
@@ -30,9 +23,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 
-public class AerolineaOceanicProxyTest {
-    private AerolineaOceanicProxy aerolineaOceanicProxy;
-
+public class AerolineaOceanicTest {
     @Mock private AerolineaOceanic mockOceanic;
 
     @Before
@@ -67,53 +58,17 @@ public class AerolineaOceanicProxyTest {
     }
 
     @Test
-    public void asientosDisponiblesParaOrigenYDestino_ObtenerAsientosDesdeBUEaSLA() throws ParametroVacioException {
+    public void asientosDisponiblesParaOrigenYDestino_ObtenerAsientosDesdeBUEaSLA() {
 
         //Asientos disponibles con vuelos desde Buenos Aires a Los Angeles
         when(mockOceanic.asientosDisponiblesParaOrigenYDestino("BUE", "31/12/1990","SLA"))
                 .thenReturn(this.generarAsientosDeBUEaSLA());
         
-        aerolineaOceanicProxy = new AerolineaOceanicProxy(mockOceanic);
-
-        VueloAsientoFiltro filtro = new VueloAsientoFiltroBuilder()
-                .agregarOrigen(Destino.BUE)
-                .agregarDestino(Destino.SLA)
-                .agregarFecha("31/12/1990")
-                .build();
-
-        Usuario usuario = new NoRegistrado("Ricardo \"EL COMANDANTE\"", "Fort)", 37422007);
-
-        List<VueloAsiento> vueloAsientos = aerolineaOceanicProxy
-                .filtrarAsientos(filtro, usuario)
-                .getAsientos();
-
-        assertTrue("No se encontraron vuelos",!vueloAsientos.isEmpty());
+    	List<AsientoDTO> asientos = mockOceanic.asientosDisponiblesParaOrigenYDestino("BUE", "31/12/1990","SLA");
+        //Todos los asientos disponibles desde Buenos Aires a Mexico
+        Assert.assertTrue("No contiene 2 vuelos", asientos.size() == 2);
     }
 
-    @Test
-    public void asientosDisponiblesParaOrigenYDestino_NoObtenerAsientosDesdeBUEaTOK() throws ParametroVacioException {
-
-        //Asientos disponibles con vuelos desde Buenos Aires a Los Angeles
-        when(mockOceanic.asientosDisponiblesParaOrigenYDestino("BUE", "31/12/1990","SLA"))
-                .thenReturn(this.generarAsientosDeBUEaSLA());
-        
-        aerolineaOceanicProxy = new AerolineaOceanicProxy(mockOceanic);
-
-        VueloAsientoFiltro filtro = new VueloAsientoFiltroBuilder()
-                .agregarOrigen(Destino.BUE)
-                .agregarDestino(Destino.TOK)
-                .agregarFecha("31/12/1990")
-                .build();
-
-        Usuario usuario = new NoRegistrado("Ricardo \"EL COMANDANTE\"", "Fort)", 37422007);
-
-        List<VueloAsiento> vueloAsientos = aerolineaOceanicProxy
-                .filtrarAsientos(filtro, usuario)
-                .getAsientos();
-
-        assertTrue("Se encontraron vuelos",vueloAsientos.isEmpty());
-    }
- 
     @Test
     public void estaReservado_asientoNoEstaReservado() {
 
