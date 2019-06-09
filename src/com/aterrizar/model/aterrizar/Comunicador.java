@@ -4,8 +4,11 @@ import com.aterrizar.exception.AsientoNoDisponibleException;
 import com.aterrizar.exception.ParametroVacioException;
 import com.aterrizar.model.aerolinea.Aerolinea;
 import com.aterrizar.model.aerolinea.AerolineaLanchitaProxy;
+import com.aterrizar.model.asiento.Asiento;
 import com.aterrizar.model.usuario.Usuario;
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltro;
+
+import java.util.List;
 
 public class Comunicador extends Aerolinea {
     AerolineaLanchitaProxy aerolineaLanchitaProxy;
@@ -28,12 +31,22 @@ public class Comunicador extends Aerolinea {
         }
     }
 
+    @Override
+    protected List getAsientosDisponiblesPorAerolinea(VueloAsientoFiltro filtro) {
+        return null;
+    }
+
+    @Override
+    protected Asiento generarAsiento(Object asiento, Usuario usuario) {
+        return null;
+    }
+
     private Aerolinea agregarAsientosLanchita(VueloAsientoFiltro filtro, Usuario usuario) throws ParametroVacioException {
-        this.asientos.addAll(
+        this.vueloAsientos.addAll(
                 aerolineaLanchitaProxy
                         .filtrarAsientos(filtro, usuario)
                         .buscarSuperOfertas(usuario)
-                        .getAsientos()
+                        .getVueloAsientos()
         );
 
         return this;
