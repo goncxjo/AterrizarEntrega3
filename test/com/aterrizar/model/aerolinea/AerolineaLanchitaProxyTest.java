@@ -5,8 +5,8 @@ import com.aterrizar.enumerator.vueloasiento.TipoOrden;
 import com.aterrizar.exception.AsientoLanchitaNoDisponibleException;
 import com.aterrizar.exception.AsientoNoDisponibleException;
 import com.aterrizar.exception.ParametroVacioException;
-import com.aterrizar.model.asiento.Asiento;
 import com.aterrizar.model.asiento.Turista;
+import com.aterrizar.model.aterrizar.Comunicador;
 import com.aterrizar.enumerator.Ubicacion;
 import com.aterrizar.model.usuario.Usuario;
 import com.aterrizar.model.usuario.Estandar;
@@ -14,7 +14,6 @@ import com.aterrizar.model.usuario.NoRegistrado;
 import com.aterrizar.model.vueloasiento.VueloAsiento;
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltro;
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltroBuilder;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,19 +21,22 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AerolineaLanchitaProxyTest {
 
     private AerolineaLanchitaProxy aerolineaLanchitaProxy;
+    private AerolineaLanchitaProxy aerolineaLanchitaProxy2;
+    private Comunicador comunicador;
 
     @Mock AerolineaLanchita mockLanchita;
+    @Mock AerolineaLanchita mockLanchita2;
 
     @Before
     public void setUp() {
@@ -277,4 +279,37 @@ public class AerolineaLanchitaProxyTest {
             assertTrue("No son iguales", listaEsperada[i].equals(vueloAsientos.get(i).getAsiento().getPrecio()));
         }
     }
+    
+    @Test
+    public void ordenarPor_tiempoDeVuelo() throws ParametroVacioException {
+        when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(Arrays.asList(
+                        Arrays.asList("LCH 344-41","2000.00","T","V","D","12.0")
+                        , Arrays.asList("LCH 344-45","400.00","T","V","D","11.0")
+                        , Arrays.asList("LCH 344-42","1000.00","E","C","D","10.0")
+                        , Arrays.asList("LCH 344-44","400.00","T","V","D","13.0")
+                        , Arrays.asList("LCH 344-43","500.00","T","V","D","18.0")
+                ));
+
+        aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
+
+        VueloAsientoFiltro filtro = new VueloAsientoFiltroBuilder()
+                .agregarOrigen(Destino.BUE)
+                .agregarDestino(Destino.BAR)
+                .agregarFecha("20190510")
+                .build();
+
+        Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort)", 37422007);
+
+        List<VueloAsiento> vueloAsientos = aerolineaLanchitaProxy
+                .filtrarAsientos(filtro, usuario)
+                .OrdenarAsientosPor(TipoOrden.tiempoVuelo)
+                .getVueloAsientos();
+
+        Double[] listaEsperada = { 10.0, 11.0, 12.0, 13.0, 18.0 };
+        for (int i = 0; i < vueloAsientos.size(); i++) {
+            assertTrue("No son iguales", listaEsperada[i].equals(vueloAsientos.get(i).getVuelo().getTiempoVuelo()));
+        }
+    }
+    
 }
