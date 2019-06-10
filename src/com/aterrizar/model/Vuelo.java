@@ -9,7 +9,7 @@ public class Vuelo {
     private Destino destino;
     private Date fecha;
     private Double tiempoVuelo;
-    private double popularidad = 0;
+    private Double popularidad;
 
     public Vuelo() {}
 
