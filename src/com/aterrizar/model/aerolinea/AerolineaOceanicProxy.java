@@ -64,6 +64,7 @@ public class AerolineaOceanicProxy extends Aerolinea {
 
     @Override
     protected Asiento generarAsiento(Object asiento, Usuario usuario) {
+	//Se formatea el objeto asiento para usar sus metodos y propiedades
         AsientoDTO asientoGenerado = (AsientoDTO) asiento;
 
         Asiento nuevoAsiento = asientoGenerado.getClaseAsiento();
