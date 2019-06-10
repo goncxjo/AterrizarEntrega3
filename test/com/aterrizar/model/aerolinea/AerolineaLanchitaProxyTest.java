@@ -58,7 +58,7 @@ public class AerolineaLanchitaProxyTest {
 
         List<VueloAsiento> vueloAsientos = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
 
         assertFalse(vueloAsientos.isEmpty());
     }
@@ -82,7 +82,7 @@ public class AerolineaLanchitaProxyTest {
 
         List<VueloAsiento> vueloAsientos = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
 
         assertTrue(vueloAsientos.isEmpty());
     }
@@ -108,7 +108,7 @@ public class AerolineaLanchitaProxyTest {
 
         List<VueloAsiento> vueloAsientos = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
         Double precioTotal = (double) Math.round(vueloAsientos.get(0).getAsiento().getPrecio());
 
         // precio asiento = 100
@@ -149,13 +149,13 @@ public class AerolineaLanchitaProxyTest {
 
         List<VueloAsiento> vueloAsientosAntesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
         
         this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
 
         List<VueloAsiento> vueloAsientosDespuesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
 
         assertTrue("El asiento está disponible", !vueloAsientosAntesDeComprar.isEmpty() && vueloAsientosDespuesDeComprar.isEmpty());
     }
@@ -190,13 +190,13 @@ public class AerolineaLanchitaProxyTest {
 
         List<VueloAsiento> vueloAsientosAntesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
 
         this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
 
         List<VueloAsiento> vueloAsientosDespuesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
 
         assertTrue("El asiento aún existe", !vueloAsientosAntesDeComprar.isEmpty() && vueloAsientosDespuesDeComprar.isEmpty());
     }

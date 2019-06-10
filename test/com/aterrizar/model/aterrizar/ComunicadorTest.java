@@ -59,7 +59,7 @@ public class ComunicadorTest {
 
 		List<VueloAsiento> vueloAsientos = comunicador
 				.filtrarAsientos(filtro, usuario)
-				.getAsientos();
+				.getVueloAsientos();
 
 		assertFalse(vueloAsientos.isEmpty());
 	}
@@ -91,14 +91,14 @@ public class ComunicadorTest {
 
 		VueloAsiento vueloAsiento = comunicador
 				.filtrarAsientos(filtro, usuario)
-				.getAsientos()
+				.getVueloAsientos()
 				.get(0);
 
 		this.comunicador.comprar(vueloAsiento.getAsiento().getCodigoAsiento(), usuario);
 
 		List<VueloAsiento> asientosLuegoDeComprar = comunicador
 				.filtrarAsientos(filtro, usuario)
-				.getAsientos();
+				.getVueloAsientos();
 
 		assertFalse("El usuario no ha podido comprar el asiento.", asientosLuegoDeComprar.contains(vueloAsiento));
 	}

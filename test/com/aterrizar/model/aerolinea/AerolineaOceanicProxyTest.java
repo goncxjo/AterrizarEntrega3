@@ -1,15 +1,8 @@
 package com.aterrizar.model.aerolinea;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import com.aterrizar.enumerator.Destino;
 import com.aterrizar.enumerator.Ubicacion;
-import com.aterrizar.exception.AsientoLanchitaNoDisponibleException;
-import com.aterrizar.exception.AsientoNoDisponibleException;
+import com.aterrizar.exception.AsientoOceanicNoDisponibleException;
 import com.aterrizar.exception.ParametroVacioException;
 import com.aterrizar.model.asiento.AsientoDTO;
 import com.aterrizar.model.asiento.Ejecutivo;
@@ -21,18 +14,20 @@ import com.aterrizar.model.vueloasiento.VueloAsiento;
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltro;
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltroBuilder;
 import com.aterrizar.util.date.DateHelper;
-
-import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
 
 public class AerolineaOceanicProxyTest {
     private AerolineaOceanicProxy aerolineaOceanicProxy;
@@ -62,7 +57,7 @@ public class AerolineaOceanicProxyTest {
 
         List<VueloAsiento> vueloAsientos = aerolineaOceanicProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
 
         assertTrue("No contiene 4 vuelos", vueloAsientos.size() == 4);
     }
@@ -85,7 +80,7 @@ public class AerolineaOceanicProxyTest {
 
         List<VueloAsiento> vueloAsientos = aerolineaOceanicProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
 
         assertTrue("No contiene 2 vuelos", vueloAsientos.size() == 2);
     }
@@ -109,7 +104,7 @@ public class AerolineaOceanicProxyTest {
 
         List<VueloAsiento> vueloAsientos = aerolineaOceanicProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
 
         assertTrue("No se encontraron vuelos",!vueloAsientos.isEmpty());
     }
@@ -133,7 +128,7 @@ public class AerolineaOceanicProxyTest {
 
         List<VueloAsiento> vueloAsientos = aerolineaOceanicProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
 
         assertTrue("Se encontraron vuelos",vueloAsientos.isEmpty());
     }
@@ -156,7 +151,7 @@ public class AerolineaOceanicProxyTest {
 
         aerolineaOceanicProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
 
     }
 
@@ -179,7 +174,7 @@ public class AerolineaOceanicProxyTest {
 
         aerolineaOceanicProxy
                 .filtrarAsientos(filtro, usuario)
-                .getAsientos();
+                .getVueloAsientos();
 
     }
     
@@ -208,7 +203,7 @@ public class AerolineaOceanicProxyTest {
     }
 
     @Test
-    public void comprarSiHayDisponibilidad_SeCompraAsientoDisponible() {
+    public void comprarSiHayDisponibilidad_SeCompraAsientoDisponible() throws AsientoOceanicNoDisponibleException {
         
     	//Se cargan vuelos disponibles
         when(mockOceanic.asientosDisponiblesParaOrigenYDestino("BUE", "31/12/1990","SLA"))
@@ -226,7 +221,7 @@ public class AerolineaOceanicProxyTest {
     }
 
     @Test
-    public void comprarSiHayDisponibilidad_NoSeCompraAsientoNoDisponible() {
+    public void comprarSiHayDisponibilidad_NoSeCompraAsientoNoDisponible() throws AsientoOceanicNoDisponibleException {
         //El asiento OCE 007 1 no se pudo comprar
         assertFalse("El asiento OCE 007 1  se pudo comprar",
                 mockOceanic.comprarSiHayDisponibilidad("40854236", "OCE 007", 1));

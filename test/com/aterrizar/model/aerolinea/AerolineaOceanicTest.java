@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.aterrizar.enumerator.Ubicacion;
+import com.aterrizar.exception.AsientoOceanicNoDisponibleException;
 import com.aterrizar.model.asiento.AsientoDTO;
 import com.aterrizar.model.asiento.Ejecutivo;
 import com.aterrizar.model.asiento.PrimeraClase;
@@ -27,10 +28,7 @@ public class AerolineaOceanicTest {
     @Mock private AerolineaOceanic mockOceanic;
 
     @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-       }
-
+    public void setUp() { MockitoAnnotations.initMocks(this); }
 
     @Test
     public void asientosDisponiblesParaOrigen_ObtenerTodosAsientosDesdeBUE() {
@@ -87,7 +85,7 @@ public class AerolineaOceanicTest {
     }
 
     @Test
-    public void comprarSiHayDisponibilidad_SeCompraAsientoDisponible() {
+    public void comprarSiHayDisponibilidad_SeCompraAsientoDisponible() throws AsientoOceanicNoDisponibleException {
 
         when(mockOceanic.comprarSiHayDisponibilidad(anyString(), eq("OCE 001"), eq(1)))
         .thenReturn(true);
@@ -98,7 +96,7 @@ public class AerolineaOceanicTest {
     }
 
     @Test
-    public void comprarSiHayDisponibilidad_NoSeCompraAsientoNoDisponible() {
+    public void comprarSiHayDisponibilidad_NoSeCompraAsientoNoDisponible() throws AsientoOceanicNoDisponibleException {
         //El asiento OCE 007 1 no se pudo comprar
         assertFalse("El asiento OCE 007 1  se pudo comprar",
                 mockOceanic.comprarSiHayDisponibilidad("40854236", "OCE 007", 1));

@@ -27,76 +27,52 @@ public class AerolineaOceanicProxy extends Aerolinea {
     }
 
     @Override
-    public Aerolinea filtrarAsientos(VueloAsientoFiltro filtro, Usuario usuario) throws ParametroVacioException {
-        validarParametros(filtro);
-        usuario.agregarFiltroAlHistorial(filtro);
+    protected void validarParametros(VueloAsientoFiltro filtro) throws ParametroVacioException {
+        String origen = filtro.getOrigen().name();
+        String fecha = filtro.getFecha();
 
-        List<AsientoDTO> asientosDisponibles;
-        if(filtro.getDestino() == null) {
-           //Se obtienen asientos  con origen
-            asientosDisponibles = this.aerolineaOceanic.asientosDisponiblesParaOrigen(
-                    filtro.getOrigen().name()
-                    , filtro.getFecha()
-            );
-        } else {
-            //Se obtienen asientos con origen y destino
-            asientosDisponibles = this.aerolineaOceanic.asientosDisponiblesParaOrigenYDestino(
-                    filtro.getOrigen().toString()
-                    , filtro.getFecha()
-                    , filtro.getDestino().toString()
-            );
+        if(origen.equals("")) {
+            throw new ParametroVacioException("El origen no puede estar vacío");
         }
 
-        if(!asientosDisponibles.isEmpty()) {
-           mapearAsientos(filtro, asientosDisponibles, usuario);
+        if(fecha == null || fecha.equals("")) {
+            throw new ParametroVacioException("La fecha no puede estar vacía");
         }
-
-        return this;
     }
 
+    @Override
+    protected List getAsientosDisponiblesPorAerolinea(VueloAsientoFiltro filtro) {
+        List asientosDisponibles = new ArrayList();
 
-	private void mapearAsientos(VueloAsientoFiltro filtro, List<AsientoDTO> asientosDisponibles, Usuario usuario) {
-        this.asientos = asientosDisponibles
-                .stream()
-                .map(asiento -> generarVueloAsiento(asiento, filtro, usuario))
-                .collect(Collectors.toList());
-		
-	}
+        if(filtro.getDestino() == null) {
+           //Se obtienen asientos  con origen
+            asientosDisponibles.addAll(this.aerolineaOceanic.asientosDisponiblesParaOrigen(
+                    filtro.getOrigen().name()
+                    , filtro.getFecha()
+            ));
+        } else {
+            //Se obtienen asientos con origen y destino
+            asientosDisponibles.addAll(this.aerolineaOceanic.asientosDisponiblesParaOrigenYDestino(
+                    filtro.getOrigen().name()
+                    , filtro.getFecha()
+                    , filtro.getDestino().name()
+            ));
+        }
 
-	private VueloAsiento generarVueloAsiento(AsientoDTO asiento, VueloAsientoFiltro filtro, Usuario usuario) {
-        /*
-         * AsientoDTO:
-         * ---------------------------------------------------------------------------------
-         * Código de vuelo (String)
-         * Número de asiento (Integer)
-         * Fecha de salida (formato “dd/MM/AAAA”)
-         * Hora de salida (formato “hh:mm”)
-         * El precio definido por la aerolínea para ese asiento
-         * La clase en la que se encuentra el asiento (turista, ejecutiva o primera clase)
-         * La ubicación del asiento en el avión (ventana, centro o pasillo)
-         * ---------------------------------------------------------------------------------
-         * */
-        return new VueloAsiento(
-                this.codigo
-                , this.nombre
-                , new Vuelo(
-                        filtro.getOrigen()
-                        , filtro.getDestino()
-                        , DateHelper.parseToDate(filtro.getFecha())
-                )
-                , generarAsiento(asiento, usuario)
-        );
-	}
+        return asientosDisponibles;
+    }
 
-    private Asiento generarAsiento(AsientoDTO asiento, Usuario usuario) {
-        Asiento asientoGenerado = asiento.getClaseAsiento();
+    @Override
+    protected Asiento generarAsiento(Object asiento, Usuario usuario) {
+        AsientoDTO asientoGenerado = (AsientoDTO) asiento;
 
-        asientoGenerado.setEstado(Estado.Disponible);
-        asientoGenerado.setUbicacion(asiento.getUbicacion());
-        asientoGenerado.setPrecio(asiento.getPrecio() + usuario.getRecargo());
-        asientoGenerado.setCodigoAsiento(asiento.getCodigoVuelo() + "-" + asiento.getNumeroAsiento());
+        Asiento nuevoAsiento = asientoGenerado.getClaseAsiento();
+        nuevoAsiento.setEstado(Estado.Disponible);
+        nuevoAsiento.setUbicacion(asientoGenerado.getUbicacion());
+        nuevoAsiento.setPrecio(asientoGenerado.getPrecio() + usuario.getRecargo());
+        nuevoAsiento.setCodigoAsiento(asientoGenerado.getCodigoVuelo() + "-" + asientoGenerado.getNumeroAsiento());
 
-        return asientoGenerado;
+        return nuevoAsiento;
     }
 
 	@Override
@@ -113,35 +89,8 @@ public class AerolineaOceanicProxy extends Aerolinea {
         }
     }
 	
-	
-	private VueloAsiento getVueloAsiento(String codigoAsiento) throws AsientoOceanicNoDisponibleException {
-        Optional<VueloAsiento> vueloAsiento = this.asientos
-                .stream()
-                .filter(x -> x.getAsiento().getCodigoAsiento().equals(codigoAsiento))
-                .findFirst();
-
-        if(vueloAsiento.isPresent()) {
-            return vueloAsiento.get();
-        } else {
-            throw new AsientoOceanicNoDisponibleException("El asiento no existe");
-        }
-	}
 
 	public boolean estaReservado(String codigoDeVuelo, Integer numeroDeAsiento) {
 		return this.aerolineaOceanic.estaReservado(codigoDeVuelo, numeroDeAsiento);
 	}
-	
-	@Override
-    protected void validarParametros(VueloAsientoFiltro filtro) throws ParametroVacioException {
-        Enum<Destino> origen = filtro.getOrigen();
-        String fecha = filtro.getFecha();
-
-        if(origen == null || origen.equals("")) {
-            throw new ParametroVacioException("El origen no puede estar vacío");
-        }
-
-        if(fecha == null || fecha.equals("")) {
-            throw new ParametroVacioException("La fecha no puede estar vacía");
-        }
-    }
 }
