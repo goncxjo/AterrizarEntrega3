@@ -36,7 +36,14 @@ public enum TipoOrden {
     	}
     }
     , popularidad {
-    	
+    	@Override
+    	public int sort(VueloAsiento asientoIzquierda, VueloAsiento asientoDerecha) {
+            return super.ordenarPorTipoOPorSuperOferta(
+                    super.sort(asientoIzquierda, asientoDerecha)
+                    , asientoIzquierda.getVuelo().getPopularidad()
+                    , asientoDerecha.getVuelo().getPopularidad()
+            );
+    	}
     };
 
     public int sort(VueloAsiento asientoIzq, VueloAsiento asientoDer) {
@@ -56,7 +63,7 @@ public enum TipoOrden {
         return resultadoComparacionSuperOferta;
     }
 
-    private int ordenarPorTipoOPorSuperOferta(int resultadoComparacionSuperOferta, Integer a, Integer b) {
+	private int ordenarPorTipoOPorSuperOferta(int resultadoComparacionSuperOferta, Integer a, Integer b) {
         if(resultadoComparacionSuperOferta == 0) {
             return a.compareTo(b);
         }

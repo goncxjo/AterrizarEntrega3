@@ -91,7 +91,9 @@ public abstract class Aerolinea {
         return this;
     }
 
-    public abstract void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException;
+    public void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException{
+    	getVueloAsiento(codigoAsiento).getVuelo().increasePopularidad();
+    };
 
     protected VueloAsiento getVueloAsiento(String codigoAsiento) throws AsientoNoDisponibleException {
         Optional<VueloAsiento> vueloAsiento = this.vueloAsientos

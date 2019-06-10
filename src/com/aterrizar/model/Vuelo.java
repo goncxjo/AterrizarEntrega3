@@ -9,6 +9,7 @@ public class Vuelo {
     private Destino destino;
     private Date fecha;
     private Double tiempoVuelo;
+    private double popularidad = 0;
 
     public Vuelo() {}
 
@@ -49,6 +50,14 @@ public class Vuelo {
     
     public void setTiempoVuelo(Double tiempoVuelo) {
         this.tiempoVuelo= tiempoVuelo;
+    }
+    
+    public Double getPopularidad() {
+        return popularidad;
+    }
+    
+    public void increasePopularidad() {
+    	popularidad += 1;
     }
 
 }
