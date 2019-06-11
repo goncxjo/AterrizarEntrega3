@@ -28,10 +28,10 @@ public class AerolineaOceanicProxy extends Aerolinea {
 
     @Override
     protected void validarParametros(VueloAsientoFiltro filtro) throws ParametroVacioException {
-        String origen = filtro.getOrigen().name();
+        Destino origen = filtro.getOrigen();
         String fecha = filtro.getFecha();
 
-        if(origen.equals("")) {
+        if(origen == null) {
             throw new ParametroVacioException("El origen no puede estar vacío");
         }
 
@@ -47,19 +47,31 @@ public class AerolineaOceanicProxy extends Aerolinea {
         if(filtro.getDestino() == null) {
            //Se obtienen asientos  con origen
             asientosDisponibles.addAll(this.aerolineaOceanic.asientosDisponiblesParaOrigen(
-                    filtro.getOrigen().name()
+                    getCodigoCiudadFormatoOceanic(filtro.getOrigen())
                     , filtro.getFecha()
             ));
         } else {
             //Se obtienen asientos con origen y destino
             asientosDisponibles.addAll(this.aerolineaOceanic.asientosDisponiblesParaOrigenYDestino(
-                    filtro.getOrigen().name()
+                    getCodigoCiudadFormatoOceanic(filtro.getOrigen())
                     , filtro.getFecha()
-                    , filtro.getDestino().name()
+                    , getCodigoCiudadFormatoOceanic(filtro.getDestino())
             ));
         }
 
         return asientosDisponibles;
+    }
+
+    private String getCodigoCiudadFormatoOceanic(Destino destino) {
+        String codigo = destino.name();
+
+        if(destino.equals(Destino.LA)) {
+            codigo = "SLA";
+        } else if (codigo.length() < 2) {
+            codigo.concat("_");
+        }
+
+        return codigo;
     }
 
     @Override

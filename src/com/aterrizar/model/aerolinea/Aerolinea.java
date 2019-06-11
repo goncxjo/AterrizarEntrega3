@@ -1,5 +1,6 @@
 package com.aterrizar.model.aerolinea;
 
+import com.aterrizar.enumerator.Destino;
 import com.aterrizar.exception.AsientoNoDisponibleException;
 import com.aterrizar.exception.ParametroVacioException;
 import com.aterrizar.model.Vuelo;
@@ -48,14 +49,14 @@ public abstract class Aerolinea {
     protected abstract List getAsientosDisponiblesPorAerolinea(VueloAsientoFiltro filtro);
 
     protected void validarParametros(VueloAsientoFiltro filtro) throws ParametroVacioException {
-        String origen = filtro.getOrigen().name();
-        String destino = filtro.getDestino().name();
+        Destino origen = filtro.getOrigen();
+        Destino destino = filtro.getDestino();
         String fecha = filtro.getFecha();
 
-        if(origen.equals("")) {
+        if(origen == null) {
             throw new ParametroVacioException("El origen no puede estar vacío");
         }
-        if(destino.equals("")) {
+        if(destino == null) {
             throw new ParametroVacioException("El destino no puede estar vacío");
         }
         if(fecha == null || fecha.equals("")) {

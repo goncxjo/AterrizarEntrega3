@@ -5,7 +5,6 @@ import com.aterrizar.enumerator.Ubicacion;
 import com.aterrizar.exception.AsientoLanchitaNoDisponibleException;
 import com.aterrizar.exception.AsientoNoDisponibleException;
 import com.aterrizar.exception.ParametroVacioException;
-import com.aterrizar.model.asiento.Asiento;
 import com.aterrizar.model.asiento.Turista;
 import com.aterrizar.model.usuario.Estandar;
 import com.aterrizar.model.usuario.NoRegistrado;
@@ -50,7 +49,7 @@ public class AerolineaLanchitaProxyTest {
 
         VueloAsientoFiltro filtro = new VueloAsientoFiltroBuilder()
                 .agregarOrigen(Destino.BUE)
-                .agregarDestino(Destino.BAR)
+                .agregarDestino(Destino.BCN)
                 .agregarFecha("20190510")
                 .build();
 

@@ -96,7 +96,7 @@ public class AerolineaOceanicProxyTest {
 
         VueloAsientoFiltro filtro = new VueloAsientoFiltroBuilder()
                 .agregarOrigen(Destino.BUE)
-                .agregarDestino(Destino.SLA)
+                .agregarDestino(Destino.LA)
                 .agregarFecha("31/12/1990")
                 .build();
 
@@ -187,7 +187,7 @@ public class AerolineaOceanicProxyTest {
     	aerolineaOceanicProxy = new AerolineaOceanicProxy(mockOceanic);
     	
         //El asiento OCE 001 1 esta disponible
-        assertFalse("El asiento OCE 001 01 esta reservado",aerolineaOceanicProxy.estaReservado("OCE 001", 1));
+        assertFalse("El asiento OCE 001-1 esta reservado",aerolineaOceanicProxy.estaReservado("OCE 001", 1));
     }
 
     @Test
@@ -199,7 +199,7 @@ public class AerolineaOceanicProxyTest {
     	aerolineaOceanicProxy = new AerolineaOceanicProxy(mockOceanic);
         
         //El asiento OCE 010 1 esta reservado
-        assertTrue("El asiento OCE 010 01 no esta reservado",aerolineaOceanicProxy.estaReservado("OCE 010", 1));
+        assertTrue("El asiento OCE 010-1 no esta reservado",aerolineaOceanicProxy.estaReservado("OCE 010", 1));
     }
 
     @Test
@@ -216,14 +216,14 @@ public class AerolineaOceanicProxyTest {
     	aerolineaOceanicProxy = new AerolineaOceanicProxy(mockOceanic);
     	
         //El asiento OCE 001 1 se pudo comprar
-        assertTrue("El asiento OCE 001 1 no se pudo comprar",
+        assertTrue("El asiento OCE 001-1 no se pudo comprar",
                 mockOceanic.comprarSiHayDisponibilidad("40854236", "OCE 001", 1));
     }
 
     @Test
     public void comprarSiHayDisponibilidad_NoSeCompraAsientoNoDisponible() throws AsientoOceanicNoDisponibleException {
-        //El asiento OCE 007 1 no se pudo comprar
-        assertFalse("El asiento OCE 007 1  se pudo comprar",
+        //El asiento OCE 007-1 no se pudo comprar
+        assertFalse("El asiento OCE 007-1 se pudo comprar",
                 mockOceanic.comprarSiHayDisponibilidad("40854236", "OCE 007", 1));
     }
 
@@ -233,14 +233,14 @@ public class AerolineaOceanicProxyTest {
         .thenReturn(true);
         
         //El asiento OCE 001 1 se pudo reservar
-        assertTrue("El asiento OCE 001 1 no se pudo reservar",
+        assertTrue("El asiento OCE 001-1 no se pudo reservar",
                 mockOceanic.reservar("40854236", "OCE 001", 1));
     }
 
     @Test
     public void reserva_NoSeReservaAsientoNoDisponible() {
-        //El asiento OCE 007 1 no se pudo reservar
-        assertFalse("El asiento OCE 007 1  se pudo reservar",
+        //El asiento OCE 007-1 no se pudo reservar
+        assertFalse("El asiento OCE 007-1 se pudo reservar",
                 mockOceanic.reservar("40854236", "OCE 007", 1));
     }
 

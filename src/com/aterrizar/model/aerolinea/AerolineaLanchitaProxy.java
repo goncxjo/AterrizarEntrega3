@@ -91,5 +91,4 @@ public class AerolineaLanchitaProxy extends Aerolinea {
             throw new AsientoNoDisponibleException(this.nombre + ": " + e.getMessage());
         }
     }
-
 }
