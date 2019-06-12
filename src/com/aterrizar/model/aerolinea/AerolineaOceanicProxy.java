@@ -100,8 +100,8 @@ public class AerolineaOceanicProxy extends Aerolinea {
        if(!aerolineaOceanic.reservar(getDniFormateado(dni),
                                      getCodigoVuelo(codigoAsiento),
                                      getNumeroDeAsiento(codigoAsiento))){
-           //Se dispara excepcion informando asiento no disponible
-           throw new AsientoYaReservadoException(this.nombre + ": " + "Asiento no disponible");
+           //Se dispara excepcion informando asiento ya reservado
+           throw new AsientoYaReservadoException(this.nombre + ": " + "Asiento ya reservado");
        }
 
     }
