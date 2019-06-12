@@ -1,5 +1,7 @@
 package com.aterrizar.model.aterrizar;
 
+import com.aterrizar.exception.AsientoNoDisponibleException;
+import com.aterrizar.exception.AsientoYaReservadoException;
 import com.aterrizar.model.vueloasiento.Reserva;
 import com.aterrizar.model.usuario.Usuario;
 import com.aterrizar.model.vueloasiento.VueloAsiento;
@@ -12,11 +14,35 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Repositorio {
+    private Comunicador comunicador;
     private List<Reserva> listaEspera =  new ArrayList<>();
     private List<Usuario> usuarios = new ArrayList<>();
     private ReservasHelper reservasHelper;
 
+    public Repositorio(Comunicador comunicador) {
+        this.comunicador = comunicador;
+    }
+
     public void registrarUsuario(String nombre, String apellido, int DNI) {}
+
+    public void comprar(VueloAsiento vueloAsiento, Usuario usuario) throws AsientoNoDisponibleException {
+        String codigoAsiento = vueloAsiento.getAsiento().getCodigoAsiento();
+
+        comunicador.comprar(codigoAsiento);
+        usuario.comprar(vueloAsiento);
+        eliminarSobreReservas(codigoAsiento);
+    }
+
+    public void reservar(VueloAsiento vueloAsiento, Usuario usuario) throws AsientoNoDisponibleException {
+        String codigoAsiento = vueloAsiento.getAsiento().getCodigoAsiento();
+
+        try {
+            comunicador.reservar(codigoAsiento, usuario.getDNI());
+            usuario.reservar(codigoAsiento);
+        } catch (AsientoYaReservadoException e) {
+            agregarSobreReserva(vueloAsiento, usuario);
+        }
+    }
 
     public List<Reserva> getListaEspera(String codigoAsiento) {
         return listaEspera
@@ -24,6 +50,14 @@ public class Repositorio {
                 .filter(x -> x.getCodigoAsiento().equals(codigoAsiento))
                 .sorted(Comparator.comparing(Reserva::getFechaReserva))
                 .collect(Collectors.toList());
+    }
+
+    private void agregarSobreReserva(VueloAsiento vueloAsiento, Usuario usuario) {
+        listaEspera.add(new Reserva(vueloAsiento.getAsiento().getCodigoAsiento(), usuario));
+    }
+
+    private void eliminarSobreReservas(String codigoAsiento) {
+        listaEspera.removeAll(getListaEspera(codigoAsiento));
     }
 
     public void transferir(Reserva reserva) {
@@ -37,10 +71,6 @@ public class Repositorio {
         } else {
             usuario.eliminar(reserva);
         }
-    }
-
-    private void eliminarSobreReservas(String codigoAsiento) {
-        listaEspera.removeAll(getListaEspera(codigoAsiento));
     }
 
     public void verificarReservasExpiradas() {

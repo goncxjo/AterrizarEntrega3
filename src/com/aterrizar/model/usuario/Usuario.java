@@ -1,7 +1,10 @@
 package com.aterrizar.model.usuario;
 
+import com.aterrizar.exception.AsientoNoDisponibleException;
+import com.aterrizar.exception.AsientoYaReservadoException;
 import com.aterrizar.exception.TipoUsuarioNoDisponibleException;
 import com.aterrizar.model.asiento.Asiento;
+import com.aterrizar.model.aterrizar.Comunicador;
 import com.aterrizar.model.vueloasiento.Reserva;
 import com.aterrizar.model.vueloasiento.VueloAsiento;
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltro;
@@ -65,7 +68,9 @@ public abstract class Usuario {
 
     public List<VueloAsiento> getHistorialCompras() { return this.historialCompras; }
 
-    public void agregarVueloComprado(VueloAsiento vueloAsiento) { this.historialCompras.add(vueloAsiento); }
+    public void comprar(VueloAsiento vueloAsiento) {
+        this.historialCompras.add(vueloAsiento);
+    }
 
     public float getRecargo() { return 0; }
 
@@ -79,16 +84,12 @@ public abstract class Usuario {
         return reservas;
     }
 
-    private void agregarReserva(String codigoAsiento) {
+    public void reservar(String codigoAsiento) {
         this.reservas.add(new Reserva(codigoAsiento, this));
     }
 
     private void eliminarReserva(String codigoAsiento) {
         this.reservas.removeIf(x -> x.getCodigoAsiento().equals(codigoAsiento));
-    }
-
-    public void agregar(Reserva reserva) {
-        agregarReserva(reserva.getCodigoAsiento());
     }
 
     public void eliminar(Reserva reserva) {
@@ -97,9 +98,6 @@ public abstract class Usuario {
 
     public void transferir(Reserva reserva, Usuario otroUsuario) {
         eliminarReserva(reserva.getCodigoAsiento());
-        otroUsuario.agregarReserva(reserva.getCodigoAsiento());
+        otroUsuario.reservar(reserva.getCodigoAsiento());
     }
 }
-
-
-

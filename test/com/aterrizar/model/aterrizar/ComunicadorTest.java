@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
@@ -36,7 +37,6 @@ public class ComunicadorTest {
 		when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
 				.thenReturn(Arrays.asList(
 						Arrays.asList("LCH 344-42","1000.00","E","C","D")
-						, Arrays.asList("LCH 344-46","400.00","T","V","D")
 				));
 
 		AerolineaLanchitaProxy aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
@@ -62,13 +62,9 @@ public class ComunicadorTest {
 		assertFalse(vueloAsientos.isEmpty());
 	}
 
-	@Test
-	public void comprarAsiento_UnUsuarioCompraUnAsiento() throws AsientoNoDisponibleException, ParametroVacioException {
-		when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
-				.thenReturn(Arrays.asList(
-						Arrays.asList("LCH 344-46","400.00","T","V","D")
-				));
 
+	@Test
+	public void comprar_Usuario_ReservaUnAsientoDisponibleYSeEliminaDelVuelo() throws AsientoNoDisponibleException, ParametroVacioException {
 		doAnswer(invocationOnMock -> {
 			when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
 					.thenAnswer(i -> Arrays.asList());
@@ -87,18 +83,16 @@ public class ComunicadorTest {
 				.agregarUbicacion(Ubicacion.Ventanilla)
 				.build();
 
-		VueloAsiento vueloAsiento = comunicador
-				.filtrarAsientos(filtro, usuario)
-				.getVueloAsientos()
-				.get(0);
-
-		this.comunicador.comprar(vueloAsiento.getAsiento().getCodigoAsiento(), usuario);
-
-		List<VueloAsiento> asientosLuegoDeComprar = comunicador
+		List<VueloAsiento> vueloAsientosAntesDeComprar = comunicador
 				.filtrarAsientos(filtro, usuario)
 				.getVueloAsientos();
 
-		assertFalse("El usuario no ha podido comprar el asiento.", asientosLuegoDeComprar.contains(vueloAsiento));
+		comunicador.comprar("LCH 344-42");
+
+		List<VueloAsiento> vueloAsientosDespuesDeComprar = comunicador
+				.filtrarAsientos(filtro, usuario)
+				.getVueloAsientos();
+
+		assertTrue("El asiento aún existe", !vueloAsientosAntesDeComprar.isEmpty() && vueloAsientosDespuesDeComprar.isEmpty());
 	}
-	
 }

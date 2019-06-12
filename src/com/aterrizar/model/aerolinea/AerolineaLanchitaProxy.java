@@ -22,6 +22,24 @@ public class AerolineaLanchitaProxy extends Aerolinea {
     }
 
     @Override
+    public void comprar(String codigoAsiento) throws AsientoNoDisponibleException {
+        try {
+            this.aerolineaLanchita.comprar(codigoAsiento);
+        } catch (AsientoLanchitaNoDisponibleException e) {
+            throw new AsientoNoDisponibleException(this.nombre + ": " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void reservar(String codigoAsiento, int dni) throws AsientoYaReservadoException {
+        try {
+            this.aerolineaLanchita.reservar(codigoAsiento, Integer.toString(dni));
+        } catch(AsientoLanchitaYaReservadoException e){
+            throw new AsientoYaReservadoException(this.nombre + ": " + "El asiento ya se encuentra reservado");
+        }
+    }
+
+    @Override
     protected List getAsientosDisponiblesPorAerolinea(VueloAsientoFiltro filtro) {
         return this.aerolineaLanchita.asientosDisponibles(
                 filtro.getOrigen().name()
@@ -85,22 +103,5 @@ public class AerolineaLanchitaProxy extends Aerolinea {
         }
     }
 
-    @Override
-    public void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException {
-        try {
-            this.aerolineaLanchita.comprar(codigoAsiento);
-            usuario.agregarVueloComprado(getVueloAsiento(codigoAsiento));
-        } catch (AsientoLanchitaNoDisponibleException e) {
-            throw new AsientoNoDisponibleException(this.nombre + ": " + e.getMessage());
-        }
-    }
 
-    @Override
-    public void reservar(String codigoAsiento, Usuario usuario) throws AsientoYaReservadoException {
-        try {
-            this.aerolineaLanchita.reservar(codigoAsiento, Integer.toString(usuario.getDNI()));
-        } catch(AsientoLanchitaYaReservadoException e){
-            throw new AsientoYaReservadoException(this.nombre + ": " + "El asiento ya se encuentra reservado");
-        }
-    }
 }

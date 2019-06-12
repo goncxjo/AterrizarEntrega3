@@ -24,9 +24,15 @@ public class Comunicador extends Aerolinea {
     }
 
     @Override
-    public void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException {
-        detectarAerolinea(codigoAsiento)
-                .comprar(codigoAsiento, usuario);
+    public void comprar(String codigoAsiento) throws AsientoNoDisponibleException {
+        Aerolinea aerolineaProxy = detectarAerolinea(codigoAsiento);
+        aerolineaProxy.comprar(codigoAsiento);
+    }
+
+    @Override
+    public void reservar(String codigoAsiento, int dni) throws AsientoYaReservadoException, AsientoNoDisponibleException {
+        Aerolinea aerolineaProxy = detectarAerolinea(codigoAsiento);
+        aerolineaProxy.reservar(codigoAsiento, dni);
     }
 
     private Aerolinea detectarAerolinea(String codigoAsiento) throws AsientoNoDisponibleException {
@@ -46,21 +52,5 @@ public class Comunicador extends Aerolinea {
         );
 
         return this;
-    }
-
-    @Override
-    protected List getAsientosDisponiblesPorAerolinea(VueloAsientoFiltro filtro) {
-        return null;
-    }
-
-    @Override
-    protected Asiento generarAsiento(Object asiento, Usuario usuario) {
-        return null;
-    }
-
-    @Override
-    public void reservar(String codigoAsiento, Usuario usuario) throws AsientoYaReservadoException, AsientoNoDisponibleException {
-        detectarAerolinea(codigoAsiento)
-                .reservar(codigoAsiento, usuario);
     }
 }

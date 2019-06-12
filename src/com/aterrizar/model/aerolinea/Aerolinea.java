@@ -30,9 +30,9 @@ public abstract class Aerolinea {
 
     public List<VueloAsiento> getVueloAsientos() { return vueloAsientos; }
 
-    public abstract void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException;
+    public abstract void comprar(String codigoAsiento) throws AsientoNoDisponibleException;
 
-    public abstract void reservar(String codigoAsiento, Usuario usuario) throws AsientoYaReservadoException, AsientoNoDisponibleException;
+    public abstract void reservar(String codigoAsiento, int dni) throws AsientoYaReservadoException, AsientoNoDisponibleException;
 
     public Aerolinea filtrarAsientos(VueloAsientoFiltro filtro, Usuario usuario) throws ParametroVacioException {
         validarParametros(filtro);
@@ -99,7 +99,11 @@ public abstract class Aerolinea {
         }
     }
 
-    protected abstract List getAsientosDisponiblesPorAerolinea(VueloAsientoFiltro filtro);
+    protected List getAsientosDisponiblesPorAerolinea(VueloAsientoFiltro filtro) {
+        return new ArrayList();
+    }
 
-    protected abstract Asiento generarAsiento(Object asiento, Usuario usuario);
+    protected Asiento generarAsiento(Object asiento, Usuario usuario) {
+        return null;
+    }
 }
