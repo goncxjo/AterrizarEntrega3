@@ -96,7 +96,7 @@ public class AerolineaOceanicProxy extends Aerolinea {
     @Override
     public void reservar(String codigoAsiento, int dni) throws AsientoYaReservadoException{
 
-        //Se comprueba si no se puede reserva
+        //Se comprueba si no se puede reservar
        if(!aerolineaOceanic.reservar(getDniFormateado(dni),
                                      getCodigoVuelo(codigoAsiento),
                                      getNumeroDeAsiento(codigoAsiento))){
