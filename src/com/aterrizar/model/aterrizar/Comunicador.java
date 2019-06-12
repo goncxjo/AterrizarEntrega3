@@ -40,6 +40,11 @@ public class Comunicador extends Aerolinea {
     protected double getTiempoVuelo(Object asiento) {
         return 0;
     }
+    
+    @Override
+    protected double getPopularidad(Object asiento) {
+        return 0;
+    }
 
     @Override
     protected Asiento generarAsiento(Object asiento, Usuario usuario) {

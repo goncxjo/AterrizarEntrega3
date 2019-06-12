@@ -6,7 +6,6 @@ import com.aterrizar.exception.AsientoLanchitaNoDisponibleException;
 import com.aterrizar.exception.AsientoNoDisponibleException;
 import com.aterrizar.exception.ParametroVacioException;
 import com.aterrizar.model.asiento.Turista;
-import com.aterrizar.model.aterrizar.Comunicador;
 import com.aterrizar.enumerator.Ubicacion;
 import com.aterrizar.model.usuario.Usuario;
 import com.aterrizar.model.usuario.Estandar;
@@ -32,11 +31,8 @@ import static org.mockito.Mockito.*;
 public class AerolineaLanchitaProxyTest {
 
     private AerolineaLanchitaProxy aerolineaLanchitaProxy;
-    private AerolineaLanchitaProxy aerolineaLanchitaProxy2;
-    private Comunicador comunicador;
 
     @Mock AerolineaLanchita mockLanchita;
-    @Mock AerolineaLanchita mockLanchita2;
 
     @Before
     public void setUp() {
@@ -47,8 +43,8 @@ public class AerolineaLanchitaProxyTest {
     public void buscarVuelos_UsuarioEstandar_BuenosAiresBarcelona_TieneVuelosDisponibles() throws ParametroVacioException {
         when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(Arrays.asList(
-                        Arrays.asList("LCH 344-42","1000.00","E","C","D","12.0")
-                        , Arrays.asList("LCH 344-46","400.00","T","V","D","12.0")
+                        Arrays.asList("LCH 344-42","1000.00","E","C","D","12.0","0.0")
+                        , Arrays.asList("LCH 344-46","400.00","T","V","D","12.0","0.0")
                 ));
 
         aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
@@ -96,7 +92,7 @@ public class AerolineaLanchitaProxyTest {
     public void buscarVuelos_UsuarioNoRegistrado_AsientoQueVale100_TieneRecargo() throws ParametroVacioException {
         when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(Arrays.asList(
-                        Arrays.asList("LCH 622-12","115.00","T","V","D","12.0")
+                        Arrays.asList("LCH 622-12","115.00","T","V","D","12.0","0.0")
                 ));
 
         aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
@@ -130,7 +126,7 @@ public class AerolineaLanchitaProxyTest {
 
         when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(Arrays.asList(
-                        Arrays.asList(codigoAsiento,"1000.00","T","V","D", "11.0")
+                        Arrays.asList(codigoAsiento,"1000.00","T","V","D","11.0","0.0")
                 ));
 
         doAnswer(invocationOnMock -> {
@@ -169,7 +165,7 @@ public class AerolineaLanchitaProxyTest {
 
         when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(Arrays.asList(
-                        Arrays.asList(codigoAsiento,"1000.00","T","V","D", "11.0")
+                        Arrays.asList(codigoAsiento,"1000.00","T","V","D","11.0","0.0")
                 ));
 
         doAnswer(invocationOnMock -> {
@@ -220,11 +216,11 @@ public class AerolineaLanchitaProxyTest {
     public void ordenarPor_precioDescendente() throws ParametroVacioException {
         when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(Arrays.asList(
-                        Arrays.asList("LCH 344-41","2000.00","T","V","D","12.0")
-                        , Arrays.asList("LCH 344-45","400.00","T","V","D","12.0")
-                        , Arrays.asList("LCH 344-42","1000.00","E","C","D","12.0")
-                        , Arrays.asList("LCH 344-44","400.00","T","V","D","12.0")
-                        , Arrays.asList("LCH 344-43","500.00","T","V","D","12.0")
+                        Arrays.asList("LCH 344-41","2000.00","T","V","D","12.0","0.0")
+                        , Arrays.asList("LCH 344-45","400.00","T","V","D","12.0","0.0")
+                        , Arrays.asList("LCH 344-42","1000.00","E","C","D","12.0","0.0")
+                        , Arrays.asList("LCH 344-44","400.00","T","V","D","12.0","0.0")
+                        , Arrays.asList("LCH 344-43","500.00","T","V","D","12.0","0.0")
                 ));
 
         aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
@@ -244,7 +240,7 @@ public class AerolineaLanchitaProxyTest {
 
         Double[] listaEsperada = { 2000.0, 1000.0, 500.0, 400.0, 400.0 };
         for (int i = 0; i < vueloAsientos.size(); i++) {
-            assertTrue("No son iguales", listaEsperada[i].equals(vueloAsientos.get(i).getAsiento().getPrecio()));
+            assertTrue("Los asientos no se han ordenado por precio de forma descendente.", listaEsperada[i].equals(vueloAsientos.get(i).getAsiento().getPrecio()));
         }
     }
 
@@ -252,11 +248,11 @@ public class AerolineaLanchitaProxyTest {
     public void ordenarPor_precioAscendente() throws ParametroVacioException {
         when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(Arrays.asList(
-                        Arrays.asList("LCH 344-41","2000.00","T","V","D","12.0")
-                        , Arrays.asList("LCH 344-45","400.00","T","V","D","12.0")
-                        , Arrays.asList("LCH 344-42","1000.00","E","C","D","12.0")
-                        , Arrays.asList("LCH 344-44","400.00","T","V","D","12.0")
-                        , Arrays.asList("LCH 344-43","500.00","T","V","D","12.0")
+                        Arrays.asList("LCH 344-41","2000.00","T","V","D","12.0","0.0")
+                        , Arrays.asList("LCH 344-45","400.00","T","V","D","12.0","0.0")
+                        , Arrays.asList("LCH 344-42","1000.00","E","C","D","12.0","0.0")
+                        , Arrays.asList("LCH 344-44","400.00","T","V","D","12.0","0.0")
+                        , Arrays.asList("LCH 344-43","500.00","T","V","D","12.0","0.0")
                 ));
 
         aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
@@ -276,7 +272,7 @@ public class AerolineaLanchitaProxyTest {
 
         Double[] listaEsperada = { 400.0, 400.0, 500.0, 1000.0, 2000.0 };
         for (int i = 0; i < vueloAsientos.size(); i++) {
-            assertTrue("No son iguales", listaEsperada[i].equals(vueloAsientos.get(i).getAsiento().getPrecio()));
+            assertTrue("Los asientos no se han ordenado por precio de forma ascendente.", listaEsperada[i].equals(vueloAsientos.get(i).getAsiento().getPrecio()));
         }
     }
     
@@ -284,11 +280,11 @@ public class AerolineaLanchitaProxyTest {
     public void ordenarPor_tiempoDeVuelo() throws ParametroVacioException {
         when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(Arrays.asList(
-                        Arrays.asList("LCH 344-41","2000.00","T","V","D","12.0")
-                        , Arrays.asList("LCH 344-45","400.00","T","V","D","11.0")
-                        , Arrays.asList("LCH 344-42","1000.00","E","C","D","10.0")
-                        , Arrays.asList("LCH 344-44","400.00","T","V","D","13.0")
-                        , Arrays.asList("LCH 344-43","500.00","T","V","D","18.0")
+                        Arrays.asList("LCH 344-41","2000.00","T","V","D","12.0","0.0")
+                        , Arrays.asList("LCH 344-45","400.00","T","V","D","11.0","0.0")
+                        , Arrays.asList("LCH 344-42","1000.00","E","C","D","10.0","0.0")
+                        , Arrays.asList("LCH 344-44","400.00","T","V","D","13.0","0.0")
+                        , Arrays.asList("LCH 344-43","500.00","T","V","D","18.0","0.0")
                 ));
 
         aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
@@ -308,7 +304,59 @@ public class AerolineaLanchitaProxyTest {
 
         Double[] listaEsperada = { 10.0, 11.0, 12.0, 13.0, 18.0 };
         for (int i = 0; i < vueloAsientos.size(); i++) {
-            assertTrue("No son iguales", listaEsperada[i].equals(vueloAsientos.get(i).getVuelo().getTiempoVuelo()));
+            assertTrue("Los asientos no se han ordenado por tiempo de vuelo.", listaEsperada[i].equals(vueloAsientos.get(i).getVuelo().getTiempoVuelo()));
+        }
+    }
+    
+    @Test
+    public void ordenarPor_popularidad() throws ParametroVacioException, AsientoNoDisponibleException {
+    	
+    	String codigoAsiento = "LCH 622-12";
+
+        when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(Arrays.asList(
+                        Arrays.asList(codigoAsiento,"1000.00","T","V","D", "12.0","0.0")
+                        , Arrays.asList("LCH 345-47","400.00","T","V","D","11.0","0.0")
+			            , Arrays.asList("LCH 344-42","1000.00","E","C","D","10.0","0.0")
+			            , Arrays.asList("LCH 622-13","400.00","T","V","D","13.0","0.0")
+			            , Arrays.asList("LCH 344-43","500.00","T","V","D","18.0","0.0")
+                ));
+
+        doAnswer(invocationOnMock -> {
+            when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
+                    .thenAnswer(i -> Arrays.asList(
+                    		Arrays.asList("LCH 345-47","400.00","T","V","D","11.0","0.0")
+			                , Arrays.asList("LCH 344-42","1000.00","E","C","D","10.0","0.0")
+			                , Arrays.asList("LCH 622-13","400.00","T","V","D","13.0","1.0")
+			                , Arrays.asList("LCH 344-43","500.00","T","V","D","18.0","0.0")
+	                ));
+            this.aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
+            return null;
+        }).when(mockLanchita).comprar(codigoAsiento);
+
+        aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
+
+        VueloAsientoFiltro filtro = new VueloAsientoFiltroBuilder()
+                .agregarOrigen(Destino.BUE)
+                .agregarDestino(Destino.MIA)
+                .agregarFecha("20190510")
+                .build();
+
+        Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort)", 37422007);
+
+        aerolineaLanchitaProxy.filtrarAsientos(filtro, usuario).getVueloAsientos();
+        
+        this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
+        
+        List<VueloAsiento> vueloAsientosOrdenadosPorPopularidad = aerolineaLanchitaProxy
+                .filtrarAsientos(filtro, usuario)
+                .OrdenarAsientosPor(TipoOrden.popularidad)
+                .getVueloAsientos();
+    	
+        Double[] listaEsperada = { 1.0, 0.0, 0.0, 0.0};
+        
+        for (int i = 0; i < vueloAsientosOrdenadosPorPopularidad.size(); i++) {
+        	assertTrue("Los asientos no se han ordenado por popularidad.", listaEsperada[i].equals(vueloAsientosOrdenadosPorPopularidad.get(i).getVuelo().getPopularidad()));
         }
     }
     

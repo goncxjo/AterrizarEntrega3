@@ -34,6 +34,12 @@ public class AerolineaLanchitaProxy extends Aerolinea {
 
         return Double.parseDouble(asientoGenerado.get(5));
     }
+    
+    protected double getPopularidad(Object asiento) {
+        List<String> asientoGenerado = (List<String>) asiento;
+
+        return Double.parseDouble(asientoGenerado.get(6));
+    }
 
     protected Asiento generarAsiento(Object asiento, Usuario usuario) {
         List<String> asientoGenerado = (List<String>) asiento;

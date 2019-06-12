@@ -70,7 +70,7 @@ public abstract class Aerolinea {
                 .map(asiento -> new VueloAsiento(
                                 this.codigo
                                 , this.nombre
-                                , new Vuelo(filtro.getOrigen(), filtro.getDestino(), DateHelper.parseToDate(filtro.getFecha()), getTiempoVuelo(asiento))
+                                , new Vuelo(filtro.getOrigen(), filtro.getDestino(), DateHelper.parseToDate(filtro.getFecha()), getTiempoVuelo(asiento), getPopularidad(asiento))
                                 , generarAsiento(asiento, usuario)
                         )
                 )
@@ -78,6 +78,8 @@ public abstract class Aerolinea {
     }
 
     protected abstract double getTiempoVuelo(Object asiento);
+    
+    protected abstract double getPopularidad(Object asiento);
 
     protected abstract Asiento generarAsiento(Object asiento, Usuario usuario);
 

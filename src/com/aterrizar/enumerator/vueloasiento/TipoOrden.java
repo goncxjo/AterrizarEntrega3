@@ -40,8 +40,8 @@ public enum TipoOrden {
     	public int sort(VueloAsiento asientoIzquierda, VueloAsiento asientoDerecha) {
             return super.ordenarPorTipoOPorSuperOferta(
                     super.sort(asientoIzquierda, asientoDerecha)
-                    , asientoIzquierda.getVuelo().getPopularidad()
                     , asientoDerecha.getVuelo().getPopularidad()
+                    , asientoIzquierda.getVuelo().getPopularidad()
             );
     	}
     };
@@ -69,4 +69,6 @@ public enum TipoOrden {
         }
         return resultadoComparacionSuperOferta;
     }
+	
+	
 }

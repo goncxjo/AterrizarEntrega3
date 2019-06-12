@@ -13,11 +13,12 @@ public class Vuelo {
 
     public Vuelo() {}
 
-    public Vuelo(Destino origen, Destino destino, Date fecha, double tiempoVuelo) {
+    public Vuelo(Destino origen, Destino destino, Date fecha, double tiempoVuelo, double popularidad) {
         this.origen = origen;
         this.destino = destino;
         this.fecha = fecha;
         this.tiempoVuelo = tiempoVuelo;
+        this.popularidad = popularidad;
     }
 
     public Destino getOrigen() {
@@ -54,6 +55,10 @@ public class Vuelo {
     
     public Double getPopularidad() {
         return popularidad;
+    }
+    
+    public void setPopularidad(Double popularidad) {
+        this.popularidad = popularidad;
     }
     
     public void increasePopularidad() {
