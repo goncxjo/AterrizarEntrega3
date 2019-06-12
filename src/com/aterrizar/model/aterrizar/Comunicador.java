@@ -1,6 +1,7 @@
 package com.aterrizar.model.aterrizar;
 
 import com.aterrizar.exception.AsientoNoDisponibleException;
+import com.aterrizar.exception.AsientoYaReservadoException;
 import com.aterrizar.exception.ParametroVacioException;
 import com.aterrizar.model.aerolinea.Aerolinea;
 import com.aterrizar.model.aerolinea.AerolineaLanchitaProxy;
@@ -24,13 +25,17 @@ public class Comunicador extends Aerolinea {
 
     @Override
     public void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException {
+        detectarAerolinea(codigoAsiento)
+                .comprar(codigoAsiento, usuario);
+    }
+
+    private Aerolinea detectarAerolinea(String codigoAsiento) throws AsientoNoDisponibleException {
         if(codigoAsiento.contains(this.aerolineaLanchitaProxy.getCodigo())) {
-            this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
+            return this.aerolineaLanchitaProxy;
         } else {
             throw new AsientoNoDisponibleException("El asiento no existe");
         }
     }
-
 
     private Aerolinea agregarAsientosLanchita(VueloAsientoFiltro filtro, Usuario usuario) throws ParametroVacioException {
         this.vueloAsientos.addAll(
@@ -43,7 +48,6 @@ public class Comunicador extends Aerolinea {
         return this;
     }
 
-
     @Override
     protected List getAsientosDisponiblesPorAerolinea(VueloAsientoFiltro filtro) {
         return null;
@@ -55,17 +59,8 @@ public class Comunicador extends Aerolinea {
     }
 
     @Override
-    public void reservar(Asiento asiento, Usuario usuario) {
-
-    }
-
-    @Override
-    public void transferenciaDeReserva(String codigoAsiento) {
-
-    }
-
-    @Override
-    protected void eliminarSobreReservas(String codigoAsiento) {
-
+    public void reservar(String codigoAsiento, Usuario usuario) throws AsientoYaReservadoException, AsientoNoDisponibleException {
+        detectarAerolinea(codigoAsiento)
+                .reservar(codigoAsiento, usuario);
     }
 }

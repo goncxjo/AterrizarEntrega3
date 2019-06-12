@@ -2,13 +2,16 @@ package com.aterrizar.model.aerolinea;
 
 import com.aterrizar.enumerator.asiento.Estado;
 import com.aterrizar.exception.AsientoLanchitaNoDisponibleException;
+import com.aterrizar.exception.AsientoLanchitaYaReservadoException;
 import com.aterrizar.exception.AsientoNoDisponibleException;
+import com.aterrizar.exception.AsientoYaReservadoException;
 import com.aterrizar.model.asiento.*;
 import com.aterrizar.enumerator.Ubicacion;
 import com.aterrizar.model.usuario.Usuario;
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltro;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AerolineaLanchitaProxy extends Aerolinea {
     private AerolineaLanchita aerolineaLanchita;
@@ -87,35 +90,17 @@ public class AerolineaLanchitaProxy extends Aerolinea {
         try {
             this.aerolineaLanchita.comprar(codigoAsiento);
             usuario.agregarVueloComprado(getVueloAsiento(codigoAsiento));
-            eliminarSobreReservas(codigoAsiento);
         } catch (AsientoLanchitaNoDisponibleException e) {
             throw new AsientoNoDisponibleException(this.nombre + ": " + e.getMessage());
         }
     }
 
     @Override
-    public void reservar (Asiento asiento, Usuario usuario) {
-        if (asiento.getEstado().estaDisponible()) {
-            this.aerolineaLanchita.reservar(asiento.getCodigoAsiento(), Integer.toString(usuario.getDNI()));
-        } else {
-            this.asientosSobreReservados.add(new AsientoSobreReservado(asiento.getCodigoAsiento(), Integer.toString(usuario.getDNI())));
+    public void reservar(String codigoAsiento, Usuario usuario) throws AsientoYaReservadoException {
+        try {
+            this.aerolineaLanchita.reservar(codigoAsiento, Integer.toString(usuario.getDNI()));
+        } catch(AsientoLanchitaYaReservadoException e){
+            throw new AsientoYaReservadoException(this.nombre + ": " + "El asiento ya se encuentra reservado");
         }
-    }
-
-    @Override
-    public void transferenciaDeReserva (String codigoAsiento) {
-        List<AsientoSobreReservado> proximosAsientos = (List<AsientoSobreReservado>) asientosSobreReservados
-                .stream()
-                .filter(asiento -> codigoAsiento.equals(asiento.getCodigoAsiento())
-        );
-        if (!proximosAsientos.isEmpty()) {
-            this.aerolineaLanchita.reservar(proximosAsientos.get(0).getCodigoAsiento(), proximosAsientos.get(0).getDNI());
-            this.asientosSobreReservados.remove(proximosAsientos.get(0));
-        }
-    }
-
-    @Override
-    protected void eliminarSobreReservas (String codigoAsiento) {
-        this.asientosSobreReservados.removeIf(asiento -> codigoAsiento.equals(asiento.getCodigoAsiento()));
     }
 }

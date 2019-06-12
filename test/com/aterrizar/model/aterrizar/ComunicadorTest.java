@@ -6,26 +6,24 @@ import com.aterrizar.exception.AsientoNoDisponibleException;
 import com.aterrizar.exception.ParametroVacioException;
 import com.aterrizar.model.aerolinea.AerolineaLanchita;
 import com.aterrizar.model.aerolinea.AerolineaLanchitaProxy;
-import com.aterrizar.model.asiento.*;
-import com.aterrizar.model.aterrizar.Comunicador;
-import com.aterrizar.model.usuario.Usuario;
+import com.aterrizar.model.asiento.Turista;
 import com.aterrizar.model.usuario.NoRegistrado;
+import com.aterrizar.model.usuario.Usuario;
 import com.aterrizar.model.vueloasiento.VueloAsiento;
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltro;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.List;
-
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltroBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 
 public class ComunicadorTest {
 	private Comunicador comunicador;

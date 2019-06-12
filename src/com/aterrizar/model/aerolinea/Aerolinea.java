@@ -1,39 +1,39 @@
 package com.aterrizar.model.aerolinea;
 
+import com.aterrizar.enumerator.Destino;
 import com.aterrizar.exception.AsientoNoDisponibleException;
+import com.aterrizar.exception.AsientoYaReservadoException;
 import com.aterrizar.exception.ParametroVacioException;
 import com.aterrizar.model.Vuelo;
 import com.aterrizar.model.asiento.Asiento;
-import com.aterrizar.model.asiento.AsientoSobreReservado;
 import com.aterrizar.model.usuario.Usuario;
 import com.aterrizar.model.vueloasiento.VueloAsiento;
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltro;
 import com.aterrizar.util.date.DateHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class Aerolinea {
     protected String codigo;
     protected String nombre;
     protected List<VueloAsiento> vueloAsientos = new ArrayList();
-    protected List<AsientoSobreReservado> asientosSobreReservados = new ArrayList();
 
-    public Aerolinea() {}
+    protected Aerolinea() {}
 
-    public Aerolinea(String codigo, String nombre) {
+    Aerolinea(String codigo, String nombre) {
         this.codigo = codigo;
         this.nombre = nombre;
     }
 
     public String getCodigo() { return codigo; }
 
-    public String getNombre() { return nombre; }
-
     public List<VueloAsiento> getVueloAsientos() { return vueloAsientos; }
-    
+
+    public abstract void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException;
+
+    public abstract void reservar(String codigoAsiento, Usuario usuario) throws AsientoYaReservadoException, AsientoNoDisponibleException;
+
     public Aerolinea filtrarAsientos(VueloAsientoFiltro filtro, Usuario usuario) throws ParametroVacioException {
         validarParametros(filtro);
         usuario.agregarFiltroAlHistorial(filtro);
@@ -47,17 +47,25 @@ public abstract class Aerolinea {
         return this;
     }
 
-    protected abstract List getAsientosDisponiblesPorAerolinea(VueloAsientoFiltro filtro);
+    public Aerolinea buscarSuperOfertas(Usuario usuario) {
+        for (VueloAsiento vueloAsiento : this.vueloAsientos) {
+            if (usuario.puedeVerSuperOferta(vueloAsiento.getAsiento())) {
+                vueloAsiento.getAsiento().marcarComoSuperOferta();
+            }
+        }
 
-    protected void validarParametros(VueloAsientoFiltro filtro) throws ParametroVacioException {
-        String origen = filtro.getOrigen().name();
-        String destino = filtro.getDestino().name();
+        return this;
+    }
+
+    private void validarParametros(VueloAsientoFiltro filtro) throws ParametroVacioException {
+        Destino origen = filtro.getOrigen();
+        Destino destino = filtro.getDestino();
         String fecha = filtro.getFecha();
 
-        if(origen.equals("")) {
+        if(origen == null) {
             throw new ParametroVacioException("El origen no puede estar vacío");
         }
-        if(destino.equals("")) {
+        if(destino == null) {
             throw new ParametroVacioException("El destino no puede estar vacío");
         }
         if(fecha == null || fecha.equals("")) {
@@ -78,20 +86,6 @@ public abstract class Aerolinea {
                 .collect(Collectors.toList());
     }
 
-    protected abstract Asiento generarAsiento(Object asiento, Usuario usuario);
-
-    public Aerolinea buscarSuperOfertas(Usuario usuario) {
-        for (VueloAsiento vueloAsiento : this.vueloAsientos) {
-            if (usuario.puedeVerSuperOferta(vueloAsiento.getAsiento())) {
-                vueloAsiento.getAsiento().marcarComoSuperOferta();
-            }
-        }
-
-        return this;
-    }
-
-    public abstract void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException;
-
     protected VueloAsiento getVueloAsiento(String codigoAsiento) throws AsientoNoDisponibleException {
         Optional<VueloAsiento> vueloAsiento = this.vueloAsientos
                 .stream()
@@ -105,7 +99,7 @@ public abstract class Aerolinea {
         }
     }
 
-    public abstract void reservar (Asiento asiento, Usuario usuario);
-    public abstract void transferenciaDeReserva (String codigoAsiento);
-    protected abstract void eliminarSobreReservas (String codigoAsiento);
+    protected abstract List getAsientosDisponiblesPorAerolinea(VueloAsientoFiltro filtro);
+
+    protected abstract Asiento generarAsiento(Object asiento, Usuario usuario);
 }

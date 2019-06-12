@@ -120,7 +120,7 @@ public class AerolineaLanchitaProxyTest {
     }
 
     @Test
-    public void comprar_UsuarioEstandar_ReservaUnAsientoDisponible() throws AsientoNoDisponibleException, ParametroVacioException {
+    public void comprar_UsuarioEstandar_CompraUnAsientoDisponible() throws AsientoNoDisponibleException, ParametroVacioException {
         String codigoAsiento = "LCH 622-12";
 
         when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
