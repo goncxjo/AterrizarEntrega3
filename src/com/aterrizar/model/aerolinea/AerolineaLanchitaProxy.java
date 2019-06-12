@@ -3,6 +3,8 @@ package com.aterrizar.model.aerolinea;
 import com.aterrizar.enumerator.asiento.Estado;
 import com.aterrizar.exception.AsientoLanchitaNoDisponibleException;
 import com.aterrizar.exception.AsientoNoDisponibleException;
+import com.aterrizar.exception.AsientoYaReservadoException;
+import com.aterrizar.exception.AsientoLanchitaYaReservadoException;
 import com.aterrizar.model.asiento.*;
 import com.aterrizar.enumerator.Ubicacion;
 import com.aterrizar.model.usuario.Usuario;
@@ -83,12 +85,20 @@ public class AerolineaLanchitaProxy extends Aerolinea {
     }
 
     @Override
-    public void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException {
+    public void comprar(String codigoAsiento, int dni) throws AsientoNoDisponibleException {
         try {
             this.aerolineaLanchita.comprar(codigoAsiento);
-            usuario.agregarVueloComprado(getVueloAsiento(codigoAsiento));
         } catch (AsientoLanchitaNoDisponibleException e) {
             throw new AsientoNoDisponibleException(this.nombre + ": " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void reservar(String codigoAsiento, int dni) throws AsientoYaReservadoException {
+        try {
+            this.aerolineaLanchita.reservar(codigoAsiento, Integer.toString(dni));
+        } catch(AsientoLanchitaYaReservadoException e){
+            throw new AsientoYaReservadoException(this.nombre + ": " + "El asiento ya se encuentra reservado");
         }
     }
 }

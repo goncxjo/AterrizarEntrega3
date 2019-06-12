@@ -23,9 +23,9 @@ public class Comunicador extends Aerolinea {
     }
 
     @Override
-    public void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException {
+    public void comprar(String codigoAsiento, int dni) throws AsientoNoDisponibleException {
         if(codigoAsiento.contains(this.aerolineaLanchitaProxy.getCodigo())) {
-            this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
+            this.aerolineaLanchitaProxy.comprar(codigoAsiento, dni);
         } else {
             throw new AsientoNoDisponibleException("El asiento no existe");
         }

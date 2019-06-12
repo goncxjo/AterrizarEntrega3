@@ -2,12 +2,12 @@ package com.aterrizar.model.aerolinea;
 
 import com.aterrizar.enumerator.Destino;
 import com.aterrizar.enumerator.Ubicacion;
-import com.aterrizar.exception.AsientoOceanicNoDisponibleException;
-import com.aterrizar.exception.ParametroVacioException;
+import com.aterrizar.exception.*;
 import com.aterrizar.model.asiento.AsientoDTO;
 import com.aterrizar.model.asiento.Ejecutivo;
 import com.aterrizar.model.asiento.PrimeraClase;
 import com.aterrizar.model.asiento.Turista;
+import com.aterrizar.model.usuario.Estandar;
 import com.aterrizar.model.usuario.NoRegistrado;
 import com.aterrizar.model.usuario.Usuario;
 import com.aterrizar.model.vueloasiento.VueloAsiento;
@@ -25,9 +25,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 public class AerolineaOceanicProxyTest {
     private AerolineaOceanicProxy aerolineaOceanicProxy;
@@ -40,7 +39,7 @@ public class AerolineaOceanicProxyTest {
     }
 
     @Test
-    public void asientosDisponiblesParaOrigen_ObtenerTodosAsientosDesdeBUE() throws ParametroVacioException {
+    public void asientosDisponiblesParaOrigen_UsuarioNoRegistrado_ObtenerTodosAsientosDesdeBUE() throws ParametroVacioException {
         //Asientos disponibles con vuelos desde Buenos Aires
         when(mockOceanic.asientosDisponiblesParaOrigen("BUE", "31/12/1990"))
                 .thenReturn(this.generarAsientosOrigen());
@@ -63,7 +62,7 @@ public class AerolineaOceanicProxyTest {
     }
 
     @Test
-    public void asientosDisponiblesParaOrigenYDestino_ObtenerAsientosDesdeBUEaMEX() throws ParametroVacioException {
+    public void asientosDisponiblesParaOrigenYDestino_UsuarioNoRegistrado_ObtenerAsientosDesdeBUEaMEX() throws ParametroVacioException {
         //Asientos disponibles con vuelos desde Buenos Aires a Mexico
         when(mockOceanic.asientosDisponiblesParaOrigenYDestino("BUE", "31/12/1990","MEX"))
                 .thenReturn(this.generarAsientosDeBUEaMEX());
@@ -86,7 +85,7 @@ public class AerolineaOceanicProxyTest {
     }
 
     @Test
-    public void asientosDisponiblesParaOrigenYDestino_ObtenerAsientosDesdeBUEaSLA() throws ParametroVacioException {
+    public void asientosDisponiblesParaOrigenYDestino_UsuarioNoRegistrado_ObtenerAsientosDesdeBUEaSLA() throws ParametroVacioException {
 
         //Asientos disponibles con vuelos desde Buenos Aires a Los Angeles
         when(mockOceanic.asientosDisponiblesParaOrigenYDestino("BUE", "31/12/1990","SLA"))
@@ -110,7 +109,7 @@ public class AerolineaOceanicProxyTest {
     }
 
     @Test
-    public void asientosDisponiblesParaOrigenYDestino_NoObtenerAsientosDesdeBUEaTOK() throws ParametroVacioException {
+    public void asientosDisponiblesParaOrigenYDestino_UsuarioNoRegistrado_NoObtenerAsientosDesdeBUEaTOK() throws ParametroVacioException {
 
         //Asientos disponibles con vuelos desde Buenos Aires a Los Angeles
         when(mockOceanic.asientosDisponiblesParaOrigenYDestino("BUE", "31/12/1990","SLA"))
@@ -134,7 +133,7 @@ public class AerolineaOceanicProxyTest {
     }
  
     @Test(expected = ParametroVacioException.class)
-    public void asientosDisponiblesParaOrigenYDestino_NoSeAceptaOrigenNulo() throws ParametroVacioException {
+    public void asientosDisponiblesParaOrigenYDestino_UsuarioNoRegistrado_NoSeAceptaOrigenNulo() throws ParametroVacioException {
 
         //Asientos disponibles con vuelos desde Buenos Aires a Los Angeles
         when(mockOceanic.asientosDisponiblesParaOrigenYDestino("BUE", "31/12/1990","SLA"))
@@ -156,7 +155,7 @@ public class AerolineaOceanicProxyTest {
     }
 
     @Test(expected = ParametroVacioException.class)
-    public void asientosDisponiblesParaOrigenYDestino_NoSeAceptaFechaNulo() throws ParametroVacioException {
+    public void asientosDisponiblesParaOrigenYDestino_UsuarioNoRegistrado_NoSeAceptaFechaNulo() throws ParametroVacioException {
 
         //Asientos disponibles con vuelos desde Buenos Aires a Los Angeles
         when(mockOceanic.asientosDisponiblesParaOrigenYDestino("BUE", "31/12/1990","SLA"))
@@ -203,45 +202,148 @@ public class AerolineaOceanicProxyTest {
     }
 
     @Test
-    public void comprarSiHayDisponibilidad_SeCompraAsientoDisponible() throws AsientoOceanicNoDisponibleException {
-        
+    public void comprarSiHayDisponibilidad_UsuarioEstandard_SeCompraAsientoDisponible() throws AsientoOceanicNoDisponibleException
+                                                                                               ,AsientoNoDisponibleException
+                                                                                               ,ParametroVacioException
+    {
+        String codigoAsiento = "OCE 001-1";
     	//Se cargan vuelos disponibles
         when(mockOceanic.asientosDisponiblesParaOrigenYDestino("BUE", "31/12/1990","SLA"))
                 .thenReturn(this.generarAsientosDeBUEaSLA());
         
-        //Se determina que vuelo de BUE a SLA  se puede comprar
-        when(mockOceanic.comprarSiHayDisponibilidad(anyString(), eq("OCE 001"), eq(1)))
-        .thenReturn(true);
- 
+        //Cuando se compra un asiento se resetea los asientos del mockOceanic quitando el asiento que se compro
+       doAnswer(invocationOnMock -> {
+           //Se obtiene la lista de asientos disponibles
+           List<AsientoDTO> asientosDisponibles = generarAsientosDeBUEaSLA();
+
+            //Se quita el asiento OCE 001-1
+           asientosDisponibles.remove(0);
+
+           when(mockOceanic.asientosDisponiblesParaOrigenYDestino("BUE", "31/12/1990","SLA"))
+                    .thenAnswer(i -> asientosDisponibles );
+           this.aerolineaOceanicProxy = new AerolineaOceanicProxy(mockOceanic);
+           //Se devuelve true indicando que se pudo comprar el asiento
+            return true;
+        }).when(mockOceanic).comprarSiHayDisponibilidad(anyString(), eq("OCE 001"), eq(1));
+
     	aerolineaOceanicProxy = new AerolineaOceanicProxy(mockOceanic);
-    	
+
+    	//Se crea filtro de busqueda
+        VueloAsientoFiltro filtro = new VueloAsientoFiltroBuilder()
+                .agregarOrigen(Destino.BUE)
+                .agregarDestino(Destino.LA)
+                .agregarFecha("31/12/1990")
+                .build();
+
+        //Se crea el usuario
+        Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort)", 37422007);
+
+        //Se guardan los asientos antes de comprar
+        List<VueloAsiento> vueloAsientosAntesDeComprar = aerolineaOceanicProxy
+                .filtrarAsientos(filtro, usuario)
+                .getVueloAsientos();
+
+        //Se compra asiento
+        aerolineaOceanicProxy.comprar(codigoAsiento, usuario.getDNI());
+
+        //Se guardan los asientos despues de comprar
+        List<VueloAsiento> vueloAsientosDespuesDeComprar = aerolineaOceanicProxy
+                .filtrarAsientos(filtro, usuario)
+                .getVueloAsientos();
+
         //El asiento OCE 001 1 se pudo comprar
         assertTrue("El asiento OCE 001-1 no se pudo comprar",
-                mockOceanic.comprarSiHayDisponibilidad("40854236", "OCE 001", 1));
+                vueloAsientosAntesDeComprar.size() == 2 && vueloAsientosDespuesDeComprar.size() == 1);
+    }
+
+    @Test(expected = AsientoNoDisponibleException.class)
+    public void comprarSiHayDisponibilidad_UsuarioEstandar_NoPuedeComprarUnAsientoReservado() throws AsientoNoDisponibleException
+                                                                                                    ,AsientoOceanicNoDisponibleException
+    {
+        doThrow(new AsientoOceanicNoDisponibleException("El asiento ya se encuentra reservado"))
+                .when(mockOceanic)
+                .comprarSiHayDisponibilidad(anyString(), eq("OCE 001"), eq(1));
+        //Se resetean los asientos disponibles
+        aerolineaOceanicProxy = new AerolineaOceanicProxy(mockOceanic);
+
+        Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort)", 37422007);
+
+        this.aerolineaOceanicProxy.comprar("OCE 001-1", usuario.getDNI());
     }
 
     @Test
-    public void comprarSiHayDisponibilidad_NoSeCompraAsientoNoDisponible() throws AsientoOceanicNoDisponibleException {
-        //El asiento OCE 007-1 no se pudo comprar
-        assertFalse("El asiento OCE 007-1 se pudo comprar",
-                mockOceanic.comprarSiHayDisponibilidad("40854236", "OCE 007", 1));
-    }
+    public void reservar_UsuarioEstandar_SeReservaAsientoDisponible() throws AsientoOceanicNoDisponibleException
+            , AsientoYaReservadoException
+            ,ParametroVacioException
+    {
+        String codigoAsiento = "OCE 001-1";
+        //Se cargan vuelos disponibles
+        when(mockOceanic.asientosDisponiblesParaOrigenYDestino("BUE", "31/12/1990","SLA"))
+                .thenReturn(this.generarAsientosDeBUEaSLA());
 
-    @Test
-    public void reservar_SeReservaAsientoDisponible() {
-        when(mockOceanic.reservar(anyString(), eq("OCE 001"), eq(1)))
-        .thenReturn(true);
-        
+
+        //Cuando se reserva un asiento se resetea los asientos del mockOceanic quitando el asiento que se reservó
+        doAnswer(invocationOnMock -> {
+            //Se obtiene la lista de asientos disponibles
+            List<AsientoDTO> asientosDisponibles = generarAsientosDeBUEaSLA();
+
+            //Se quita el asiento OCE 001-1
+            asientosDisponibles.remove(0);
+
+            when(mockOceanic.asientosDisponiblesParaOrigenYDestino("BUE", "31/12/1990","SLA"))
+                    .thenAnswer(i -> asientosDisponibles );
+            //Se resetean los asientos disponibles
+            this.aerolineaOceanicProxy = new AerolineaOceanicProxy(mockOceanic);
+            //Se devuelve true indicando que se pudo reservar asiento
+            return true;
+        }).when(mockOceanic).reservar(anyString(), eq("OCE 001"), eq(1));
+
+        //Se crea proxy con el mock
+        aerolineaOceanicProxy = new AerolineaOceanicProxy(mockOceanic);
+
+        //Se crea filtro de busqueda
+        VueloAsientoFiltro filtro = new VueloAsientoFiltroBuilder()
+                .agregarOrigen(Destino.BUE)
+                .agregarDestino(Destino.LA)
+                .agregarFecha("31/12/1990")
+                .build();
+
+        //Se crea el usuario
+        Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort)", 37422007);
+
+        //Se guardan los asientos antes de reservar
+        List<VueloAsiento> vueloAsientosAntesDeReservar = aerolineaOceanicProxy
+                .filtrarAsientos(filtro, usuario)
+                .getVueloAsientos();
+
+        //Se reserva asiento
+        aerolineaOceanicProxy.reservar(codigoAsiento, usuario.getDNI());
+
+        //Se guardan los asientos despues de reservar
+        List<VueloAsiento> vueloAsientosDespuesDeReservar = aerolineaOceanicProxy
+                .filtrarAsientos(filtro, usuario)
+                .getVueloAsientos();
+
         //El asiento OCE 001 1 se pudo reservar
         assertTrue("El asiento OCE 001-1 no se pudo reservar",
-                mockOceanic.reservar("40854236", "OCE 001", 1));
+                vueloAsientosAntesDeReservar.size() == 2 && vueloAsientosDespuesDeReservar.size() == 1);
     }
 
-    @Test
-    public void reserva_NoSeReservaAsientoNoDisponible() {
-        //El asiento OCE 007-1 no se pudo reservar
-        assertFalse("El asiento OCE 007-1 se pudo reservar",
-                mockOceanic.reservar("40854236", "OCE 007", 1));
+    @Test(expected = AsientoYaReservadoException.class)
+    public void reservar_UsuarioEstandar_NoSeReservaAsientoReservado() throws AsientoYaReservadoException
+    {
+        //Se determina el asiento que no se puede reservar
+        when(mockOceanic.reservar(anyString(), eq("OCE 002"), eq(5)))
+                .thenReturn(false);
+
+        //Se crea proxy con el mock
+        aerolineaOceanicProxy = new AerolineaOceanicProxy(mockOceanic);
+
+        //Se crea el usuario
+        Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort)", 37422007);
+
+        //Se reserva asiento
+        aerolineaOceanicProxy.reservar("OCE 002-5", usuario.getDNI());
     }
 
 

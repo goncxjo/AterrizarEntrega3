@@ -2,21 +2,15 @@ package com.aterrizar.model.aerolinea;
 
 import com.aterrizar.enumerator.Destino;
 import com.aterrizar.enumerator.asiento.Estado;
-import com.aterrizar.exception.AsientoLanchitaNoDisponibleException;
-import com.aterrizar.exception.AsientoNoDisponibleException;
-import com.aterrizar.exception.AsientoOceanicNoDisponibleException;
-import com.aterrizar.exception.ParametroVacioException;
-import com.aterrizar.model.Vuelo;
+import com.aterrizar.exception.*;
 import com.aterrizar.model.asiento.*;
 import com.aterrizar.model.usuario.Usuario;
-import com.aterrizar.model.vueloasiento.VueloAsiento;
+
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltro;
-import com.aterrizar.util.date.DateHelper;
+
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class AerolineaOceanicProxy extends Aerolinea {
     private AerolineaOceanic aerolineaOceanic;
@@ -89,21 +83,44 @@ public class AerolineaOceanicProxy extends Aerolinea {
     }
 
 	@Override
-    public void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException {
-        String dni = Integer.toString(usuario.getDNI());
-        String codigoVuelo = codigoAsiento.split("-")[0];
-        Integer numeroAsiento = Integer.parseInt(codigoAsiento.split("-")[1]);
-
+    public void comprar(String codigoAsiento, int dni) throws AsientoNoDisponibleException {
         try {
-            this.aerolineaOceanic.comprarSiHayDisponibilidad(dni, codigoVuelo, numeroAsiento);
-            usuario.agregarVueloComprado(getVueloAsiento(codigoAsiento));
+            this.aerolineaOceanic.comprarSiHayDisponibilidad(getDniFormateado(dni),
+                                                             getCodigoVuelo(codigoAsiento),
+                                                             getNumeroDeAsiento(codigoAsiento));
         } catch (AsientoOceanicNoDisponibleException e) {
             throw new AsientoNoDisponibleException(this.nombre + ": " + e.getMessage());
         }
     }
-	
+
+    @Override
+    public void reservar(String codigoAsiento, int dni) throws AsientoYaReservadoException{
+
+        //Se comprueba si no se puede reserva
+       if(!aerolineaOceanic.reservar(getDniFormateado(dni),
+                                     getCodigoVuelo(codigoAsiento),
+                                     getNumeroDeAsiento(codigoAsiento))){
+           //Se dispara excepcion informando asiento no disponible
+           throw new AsientoYaReservadoException(this.nombre + ": " + "Asiento no disponible");
+       }
+
+    }
 
 	public boolean estaReservado(String codigoDeVuelo, Integer numeroDeAsiento) {
 		return this.aerolineaOceanic.estaReservado(codigoDeVuelo, numeroDeAsiento);
 	}
+
+	private String getCodigoVuelo (String codigoAsiento){
+       return codigoAsiento.split("-")[0];
+    }
+
+    private int getNumeroDeAsiento(String codigoAsiento){
+        return Integer.parseInt(codigoAsiento.split("-")[1]);
+    }
+
+    private String getDniFormateado (int dni){
+        return  Integer.toString(dni);
+
+    }
+
 }

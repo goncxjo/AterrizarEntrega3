@@ -2,6 +2,7 @@ package com.aterrizar.model.aerolinea;
 
 import com.aterrizar.enumerator.Destino;
 import com.aterrizar.exception.AsientoNoDisponibleException;
+import com.aterrizar.exception.AsientoYaReservadoException;
 import com.aterrizar.exception.ParametroVacioException;
 import com.aterrizar.model.Vuelo;
 import com.aterrizar.model.asiento.Asiento;
@@ -89,7 +90,9 @@ public abstract class Aerolinea {
         return this;
     }
 
-    public abstract void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException;
+    public abstract void comprar(String codigoAsiento, int dni) throws AsientoNoDisponibleException;
+
+    public void reservar(String codigoAsiento, int dni) throws AsientoYaReservadoException, AsientoNoDisponibleException{};
 
     protected VueloAsiento getVueloAsiento(String codigoAsiento) throws AsientoNoDisponibleException {
         Optional<VueloAsiento> vueloAsiento = this.vueloAsientos

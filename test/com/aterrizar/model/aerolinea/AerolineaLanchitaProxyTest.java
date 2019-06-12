@@ -114,7 +114,6 @@ public class AerolineaLanchitaProxyTest {
         // impuestos asiento = 15
         // recargo = 20
         // TOTAL = 135
-        System.out.println(precioTotal);
         assertEquals("El asiento no tiene recargo", 135.00, precioTotal, 0.0);
     }
 
@@ -150,7 +149,7 @@ public class AerolineaLanchitaProxyTest {
                 .filtrarAsientos(filtro, usuario)
                 .getVueloAsientos();
         
-        this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
+        this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario.getDNI());
 
         List<VueloAsiento> vueloAsientosDespuesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
@@ -191,7 +190,7 @@ public class AerolineaLanchitaProxyTest {
                 .filtrarAsientos(filtro, usuario)
                 .getVueloAsientos();
 
-        this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
+        this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario.getDNI());
 
         List<VueloAsiento> vueloAsientosDespuesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
@@ -209,6 +208,6 @@ public class AerolineaLanchitaProxyTest {
         aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
         Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort)", 37422007);
 
-        this.aerolineaLanchitaProxy.comprar("LCH 622-12", usuario);
+        this.aerolineaLanchitaProxy.comprar("LCH 622-12", usuario.getDNI());
     }
 }
