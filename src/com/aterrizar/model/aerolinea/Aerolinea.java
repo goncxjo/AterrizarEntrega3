@@ -106,4 +106,6 @@ public abstract class Aerolinea {
     protected Asiento generarAsiento(Object asiento, Usuario usuario) {
         return null;
     }
+
+    public abstract boolean estaReservado(String codigoAsiento);
 }

@@ -40,6 +40,11 @@ public class AerolineaLanchitaProxy extends Aerolinea {
     }
 
     @Override
+    public boolean estaReservado(String codigoAsiento) {
+        return this.aerolineaLanchita.estaReservado(codigoAsiento);
+    }
+
+    @Override
     protected List getAsientosDisponiblesPorAerolinea(VueloAsientoFiltro filtro) {
         return this.aerolineaLanchita.asientosDisponibles(
                 filtro.getOrigen().name()

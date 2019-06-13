@@ -83,4 +83,8 @@ public class Repositorio {
         }
     }
 
+    public boolean estaReservado(String codigoAsiento) {
+        return comunicador.estaReservado(codigoAsiento);
+    }
+
 }

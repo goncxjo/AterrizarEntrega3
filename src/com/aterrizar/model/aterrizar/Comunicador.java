@@ -53,4 +53,14 @@ public class Comunicador extends Aerolinea {
 
         return this;
     }
+
+    @Override
+    public boolean estaReservado(String codigoAsiento) {
+        try {
+            Aerolinea aerolineaProxy = detectarAerolinea(codigoAsiento);
+            return aerolineaProxy.estaReservado(codigoAsiento);
+        } catch (AsientoNoDisponibleException e) {
+            return true;
+        }
+    }
 }
