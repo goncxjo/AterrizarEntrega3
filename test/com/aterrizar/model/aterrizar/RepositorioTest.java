@@ -32,18 +32,18 @@ public class RepositorioTest {
 		repositorio = new Repositorio(comunicador);
 	}
 	
-    @Test
-    public void reservar_AsientoDisponible_ReservaUnAsientoDisponible() throws AsientoNoDisponibleException {
-    	Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort)", 37422007);
-        VueloAsiento vueloAsiento = new VueloAsiento(
-        		"Lanchita"
-                , "LCH"
-                , new Vuelo(Destino.BUE, Destino.MIA, DateHelper.parseToDate("13/05/2019"))
-                , new Ejecutivo("LCH 005-40", 50000, Ubicacion.Centro, Estado.Disponible)
-        );
-    	
-        repositorio.reservar(vueloAsiento, usuario);
-        
-        assertTrue("No se pudo reservar el asiento", repositorio.getListaEspera(vueloAsiento.getAsiento().getCodigoAsiento()).isEmpty());
-    }
+	@Test
+	public void reservar_AsientoDisponible_ReservaUnAsientoDisponible() throws AsientoNoDisponibleException {
+		Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort)", 37422007);
+		VueloAsiento vueloAsiento = new VueloAsiento(
+				"Lanchita"
+				, "LCH"
+				, new Vuelo(Destino.BUE, Destino.MIA, DateHelper.parseToDate("13/05/2019"))
+				, new Ejecutivo("LCH 005-40", 50000, Ubicacion.Centro, Estado.Disponible)
+				);
+		
+		repositorio.reservar(vueloAsiento, usuario);
+		
+		assertTrue("No se pudo reservar el asiento", repositorio.getListaEspera(vueloAsiento.getAsiento().getCodigoAsiento()).isEmpty());
+		}
 }
