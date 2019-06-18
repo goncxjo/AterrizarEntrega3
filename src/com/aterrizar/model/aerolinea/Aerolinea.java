@@ -1,5 +1,6 @@
 package com.aterrizar.model.aerolinea;
 
+import com.aterrizar.enumerator.vueloasiento.TipoOrden;
 import com.aterrizar.exception.AsientoNoDisponibleException;
 import com.aterrizar.exception.ParametroVacioException;
 import com.aterrizar.model.Vuelo;
@@ -69,12 +70,16 @@ public abstract class Aerolinea {
                 .map(asiento -> new VueloAsiento(
                                 this.codigo
                                 , this.nombre
-                                , new Vuelo(filtro.getOrigen(), filtro.getDestino(), DateHelper.parseToDate(filtro.getFecha()))
+                                , new Vuelo(filtro.getOrigen(), filtro.getDestino(), DateHelper.parseToDate(filtro.getFecha()), getTiempoVuelo(asiento), getPopularidad(asiento))
                                 , generarAsiento(asiento, usuario)
                         )
                 )
                 .collect(Collectors.toList());
     }
+
+    protected abstract double getTiempoVuelo(Object asiento);
+    
+    protected abstract double getPopularidad(Object asiento);
 
     protected abstract Asiento generarAsiento(Object asiento, Usuario usuario);
 
@@ -88,7 +93,9 @@ public abstract class Aerolinea {
         return this;
     }
 
-    public abstract void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException;
+    public void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException{
+    	getVueloAsiento(codigoAsiento).getVuelo().increasePopularidad();
+    };
 
     protected VueloAsiento getVueloAsiento(String codigoAsiento) throws AsientoNoDisponibleException {
         Optional<VueloAsiento> vueloAsiento = this.vueloAsientos
@@ -101,5 +108,14 @@ public abstract class Aerolinea {
         } else {
             throw new AsientoNoDisponibleException("El asiento no existe");
         }
+    }
+
+    public Aerolinea OrdenarAsientosPor(TipoOrden tipoOrden) {
+        if(tipoOrden == null) {
+            tipoOrden = TipoOrden.superOferta;
+        }
+        this.vueloAsientos.sort(tipoOrden::sort);
+
+        return this;
     }
 }
