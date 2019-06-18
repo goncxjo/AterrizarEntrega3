@@ -159,9 +159,6 @@ public class AerolineaLanchitaProxyTest {
                 .filtrarAsientos(filtro, usuario)
                 .getVueloAsientos();
 
-        Asiento asientoAntesDeComprar = vueloAsientosAntesDeComprar.get(0).getAsiento();
-        Asiento asientoDespuesDeComprar = vueloAsientosDespuesDeComprar.get(0).getAsiento();
-
         assertTrue("El asiento está disponible", !vueloAsientosAntesDeComprar.isEmpty() && vueloAsientosDespuesDeComprar.isEmpty());
     }
 

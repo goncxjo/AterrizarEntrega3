@@ -36,7 +36,7 @@ public class ComunicadorTest {
 		
 		when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
 				.thenReturn(Arrays.asList(
-						Arrays.asList("LCH 344-42","1000.00","E","C","D")
+						Arrays.asList("LCH 344-42","1000.00","E","C","D", "12.0", "0.0")
 				));
 
 		AerolineaLanchitaProxy aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
