@@ -2,6 +2,7 @@ package com.aterrizar.enumerator;
 
 public enum Destino {
     BUE("Buenos Aires")
+    , EZE("Ezeiza")
     , LA("Los Angeles")
     , BAR("Barcelona")
     , MAD("Madrid")

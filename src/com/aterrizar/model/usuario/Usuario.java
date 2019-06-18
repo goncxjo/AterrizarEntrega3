@@ -1,7 +1,11 @@
 package com.aterrizar.model.usuario;
 
+import com.aterrizar.exception.AsientoNoDisponibleException;
+import com.aterrizar.exception.AsientoYaReservadoException;
 import com.aterrizar.exception.TipoUsuarioNoDisponibleException;
 import com.aterrizar.model.asiento.Asiento;
+import com.aterrizar.model.aterrizar.Comunicador;
+import com.aterrizar.model.vueloasiento.Reserva;
 import com.aterrizar.model.vueloasiento.VueloAsiento;
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltro;
 
@@ -12,15 +16,14 @@ public abstract class Usuario {
     protected String nombre;
     protected String apellido;
     protected int DNI;
-    protected List<VueloAsientoFiltro> historialBusquedas;
-    protected List<VueloAsiento> historialCompras;
+    protected List<VueloAsientoFiltro> historialBusquedas = new ArrayList<>();
+    protected List<VueloAsiento> historialCompras = new ArrayList<>();
+    protected List<Reserva> reservas = new ArrayList<>();
 
     public Usuario(String nombre, String apellido, int DNI) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.DNI = DNI;
-        this.historialBusquedas = new ArrayList();
-        this.historialCompras = new ArrayList();
     }
 
     public Usuario(Usuario usuario) {
@@ -65,7 +68,9 @@ public abstract class Usuario {
 
     public List<VueloAsiento> getHistorialCompras() { return this.historialCompras; }
 
-    public void agregarVueloComprado(VueloAsiento vueloAsiento) { this.historialCompras.add(vueloAsiento); }
+    public void comprar(VueloAsiento vueloAsiento) {
+        this.historialCompras.add(vueloAsiento);
+    }
 
     public float getRecargo() { return 0; }
 
@@ -74,7 +79,25 @@ public abstract class Usuario {
     public Usuario actualizarTipo(Usuario nuevoUsuario) throws TipoUsuarioNoDisponibleException {
         throw new TipoUsuarioNoDisponibleException("No existe el usuario solicitado");
     }
+
+    public List<Reserva> getReservas() {
+        return reservas;
+    }
+
+    public void reservar(String codigoAsiento) {
+        this.reservas.add(new Reserva(codigoAsiento, this));
+    }
+
+    private void eliminarReserva(String codigoAsiento) {
+        this.reservas.removeIf(x -> x.getCodigoAsiento().equals(codigoAsiento));
+    }
+
+    public void eliminar(Reserva reserva) {
+        eliminarReserva(reserva.getCodigoAsiento());
+    }
+
+    public void transferir(Reserva reserva, Usuario otroUsuario) {
+        eliminarReserva(reserva.getCodigoAsiento());
+        otroUsuario.reservar(reserva.getCodigoAsiento());
+    }
 }
-
-
-

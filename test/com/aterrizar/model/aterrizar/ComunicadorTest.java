@@ -6,26 +6,25 @@ import com.aterrizar.exception.AsientoNoDisponibleException;
 import com.aterrizar.exception.ParametroVacioException;
 import com.aterrizar.model.aerolinea.AerolineaLanchita;
 import com.aterrizar.model.aerolinea.AerolineaLanchitaProxy;
-import com.aterrizar.model.asiento.*;
-import com.aterrizar.model.aterrizar.Comunicador;
-import com.aterrizar.model.usuario.Usuario;
+import com.aterrizar.model.asiento.Turista;
 import com.aterrizar.model.usuario.NoRegistrado;
+import com.aterrizar.model.usuario.Usuario;
 import com.aterrizar.model.vueloasiento.VueloAsiento;
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltro;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.List;
-
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltroBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 
 public class ComunicadorTest {
 	private Comunicador comunicador;
@@ -37,8 +36,7 @@ public class ComunicadorTest {
 		
 		when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
 				.thenReturn(Arrays.asList(
-						Arrays.asList("LCH 344-42","1000.00","E","C","D", "11.0", "0.0")
-						, Arrays.asList("LCH 344-46","400.00","T","V","D", "13.0", "0.0")
+						Arrays.asList("LCH 344-42","1000.00","E","C","D")
 				));
 
 		AerolineaLanchitaProxy aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
@@ -94,7 +92,7 @@ public class ComunicadorTest {
 				.getVueloAsientos()
 				.get(0);
 
-		this.comunicador.comprar(vueloAsiento.getAsiento().getCodigoAsiento(), usuario);
+		this.comunicador.comprar(vueloAsiento.getAsiento().getCodigoAsiento());
 
 		List<VueloAsiento> asientosLuegoDeComprar = comunicador
 				.filtrarAsientos(filtro, usuario)
@@ -102,5 +100,37 @@ public class ComunicadorTest {
 
 		assertFalse("El usuario no ha podido comprar el asiento.", asientosLuegoDeComprar.contains(vueloAsiento));
 	}
-	
+
+	@Test
+	public void comprar_Usuario_ReservaUnAsientoDisponibleYSeEliminaDelVuelo() throws AsientoNoDisponibleException, ParametroVacioException {
+		doAnswer(invocationOnMock -> {
+			when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
+					.thenAnswer(i -> Arrays.asList());
+
+			AerolineaLanchitaProxy aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
+			this.comunicador = new Comunicador(aerolineaLanchitaProxy);
+			return null;
+		}).when(mockLanchita).comprar(anyString());
+
+		Usuario usuario = new NoRegistrado("Ricardo \"EL COMANDANTE\"", "Fort", 37422007);
+		VueloAsientoFiltro filtro = new VueloAsientoFiltroBuilder()
+				.agregarOrigen(Destino.BUE)
+				.agregarDestino(Destino.MIA)
+				.agregarFecha("20190510")
+				.agregarTipoAsiento(new Turista())
+				.agregarUbicacion(Ubicacion.Ventanilla)
+				.build();
+
+		List<VueloAsiento> vueloAsientosAntesDeComprar = comunicador
+				.filtrarAsientos(filtro, usuario)
+				.getVueloAsientos();
+
+		comunicador.comprar("LCH 344-42");
+
+		List<VueloAsiento> vueloAsientosDespuesDeComprar = comunicador
+				.filtrarAsientos(filtro, usuario)
+				.getVueloAsientos();
+
+		assertTrue("El asiento aún existe", !vueloAsientosAntesDeComprar.isEmpty() && vueloAsientosDespuesDeComprar.isEmpty());
+	}
 }

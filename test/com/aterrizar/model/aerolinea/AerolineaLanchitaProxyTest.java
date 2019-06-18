@@ -6,6 +6,7 @@ import com.aterrizar.enumerator.vueloasiento.TipoOrden;
 import com.aterrizar.exception.AsientoLanchitaNoDisponibleException;
 import com.aterrizar.exception.AsientoNoDisponibleException;
 import com.aterrizar.exception.ParametroVacioException;
+import com.aterrizar.model.asiento.Asiento;
 import com.aterrizar.model.asiento.Turista;
 import com.aterrizar.model.usuario.Estandar;
 import com.aterrizar.model.usuario.NoRegistrado;
@@ -121,7 +122,7 @@ public class AerolineaLanchitaProxyTest {
     }
 
     @Test
-    public void comprar_UsuarioEstandar_ReservaUnAsientoDisponible() throws AsientoNoDisponibleException, ParametroVacioException {
+    public void comprar_UsuarioEstandar_CompraUnAsientoDisponible() throws AsientoNoDisponibleException, ParametroVacioException {
         String codigoAsiento = "LCH 622-12";
 
         when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
@@ -151,10 +152,15 @@ public class AerolineaLanchitaProxyTest {
         List<VueloAsiento> vueloAsientosAntesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
                 .getVueloAsientos();
-        this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
+
+        this.aerolineaLanchitaProxy.comprar(codigoAsiento);
+
         List<VueloAsiento> vueloAsientosDespuesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
                 .getVueloAsientos();
+
+        Asiento asientoAntesDeComprar = vueloAsientosAntesDeComprar.get(0).getAsiento();
+        Asiento asientoDespuesDeComprar = vueloAsientosDespuesDeComprar.get(0).getAsiento();
 
         assertTrue("El asiento está disponible", !vueloAsientosAntesDeComprar.isEmpty() && vueloAsientosDespuesDeComprar.isEmpty());
     }
@@ -191,7 +197,7 @@ public class AerolineaLanchitaProxyTest {
                 .filtrarAsientos(filtro, usuario)
                 .getVueloAsientos();
 
-        this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
+        this.aerolineaLanchitaProxy.comprar(codigoAsiento);
 
         List<VueloAsiento> vueloAsientosDespuesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
@@ -207,9 +213,8 @@ public class AerolineaLanchitaProxyTest {
                 .comprar(anyString());
 
         aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
-        Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort)", 37422007);
 
-        this.aerolineaLanchitaProxy.comprar("LCH 622-12", usuario);
+        this.aerolineaLanchitaProxy.comprar("LCH 622-12");
     }
 
     @Test
@@ -346,7 +351,7 @@ public class AerolineaLanchitaProxyTest {
 
         aerolineaLanchitaProxy.filtrarAsientos(filtro, usuario).getVueloAsientos();
         
-        this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
+        this.aerolineaLanchitaProxy.comprar(codigoAsiento);
         
         List<VueloAsiento> vueloAsientosOrdenadosPorPopularidad = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)

@@ -2,7 +2,9 @@ package com.aterrizar.model.aerolinea;
 
 import com.aterrizar.enumerator.asiento.Estado;
 import com.aterrizar.exception.AsientoLanchitaNoDisponibleException;
+import com.aterrizar.exception.AsientoLanchitaYaReservadoException;
 import com.aterrizar.exception.AsientoNoDisponibleException;
+import com.aterrizar.exception.AsientoYaReservadoException;
 import com.aterrizar.model.asiento.*;
 import com.aterrizar.enumerator.Ubicacion;
 import com.aterrizar.model.usuario.Usuario;
@@ -19,6 +21,43 @@ public class AerolineaLanchitaProxy extends Aerolinea {
     }
 
     @Override
+    protected double getTiempoVuelo(Object asiento) {
+        List<String> asientoGenerado = (List<String>) asiento;
+
+        return Double.parseDouble(asientoGenerado.get(5));
+    }
+
+    @Override
+    public void comprar(String codigoAsiento) throws AsientoNoDisponibleException {
+        try {
+            super.comprar(codigoAsiento);
+            this.aerolineaLanchita.comprar(codigoAsiento);
+        } catch (AsientoLanchitaNoDisponibleException e) {
+            throw new AsientoNoDisponibleException(this.nombre + ": " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void reservar(String codigoAsiento, int dni) throws AsientoYaReservadoException {
+        try {
+            this.aerolineaLanchita.reservar(codigoAsiento, Integer.toString(dni));
+        } catch(AsientoLanchitaYaReservadoException e){
+            throw new AsientoYaReservadoException(this.nombre + ": " + "El asiento ya se encuentra reservado");
+        }
+    }
+    
+    protected double getPopularidad(Object asiento) {
+        List<String> asientoGenerado = (List<String>) asiento;
+
+        return Double.parseDouble(asientoGenerado.get(6));
+    }
+
+    @Override
+    public boolean estaReservado(String codigoAsiento) {
+        return this.aerolineaLanchita.estaReservado(codigoAsiento);
+    }
+
+    @Override
     protected List getAsientosDisponiblesPorAerolinea(VueloAsientoFiltro filtro) {
         return this.aerolineaLanchita.asientosDisponibles(
                 filtro.getOrigen().name()
@@ -26,19 +65,6 @@ public class AerolineaLanchitaProxy extends Aerolinea {
                 , filtro.getDestino().name()
                 , null
         );
-    }
-
-    @Override
-    protected double getTiempoVuelo(Object asiento) {
-        List<String> asientoGenerado = (List<String>) asiento;
-
-        return Double.parseDouble(asientoGenerado.get(5));
-    }
-    
-    protected double getPopularidad(Object asiento) {
-        List<String> asientoGenerado = (List<String>) asiento;
-
-        return Double.parseDouble(asientoGenerado.get(6));
     }
 
     protected Asiento generarAsiento(Object asiento, Usuario usuario) {
@@ -92,17 +118,6 @@ public class AerolineaLanchitaProxy extends Aerolinea {
                 return Ubicacion.Ventanilla;
             default:
                 return Ubicacion.valueOf(inicial);
-        }
-    }
-
-
-    @Override
-    public void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException {
-        try {
-            this.aerolineaLanchita.comprar(codigoAsiento);
-            usuario.agregarVueloComprado(getVueloAsiento(codigoAsiento));
-        } catch (AsientoLanchitaNoDisponibleException e) {
-            throw new AsientoNoDisponibleException(this.nombre + ": " + e.getMessage());
         }
     }
 }

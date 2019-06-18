@@ -1,6 +1,7 @@
 package com.aterrizar.model.aterrizar;
 
 import com.aterrizar.exception.AsientoNoDisponibleException;
+import com.aterrizar.exception.AsientoYaReservadoException;
 import com.aterrizar.exception.ParametroVacioException;
 import com.aterrizar.model.aerolinea.Aerolinea;
 import com.aterrizar.model.aerolinea.AerolineaLanchitaProxy;
@@ -23,9 +24,20 @@ public class Comunicador extends Aerolinea {
     }
 
     @Override
-    public void comprar(String codigoAsiento, Usuario usuario) throws AsientoNoDisponibleException {
+    public void comprar(String codigoAsiento) throws AsientoNoDisponibleException {
+        Aerolinea aerolineaProxy = detectarAerolinea(codigoAsiento);
+        aerolineaProxy.comprar(codigoAsiento);
+    }
+
+    @Override
+    public void reservar(String codigoAsiento, int dni) throws AsientoYaReservadoException, AsientoNoDisponibleException {
+        Aerolinea aerolineaProxy = detectarAerolinea(codigoAsiento);
+        aerolineaProxy.reservar(codigoAsiento, dni);
+    }
+
+    private Aerolinea detectarAerolinea(String codigoAsiento) throws AsientoNoDisponibleException {
         if(codigoAsiento.contains(this.aerolineaLanchitaProxy.getCodigo())) {
-            this.aerolineaLanchitaProxy.comprar(codigoAsiento, usuario);
+            return this.aerolineaLanchitaProxy;
         } else {
             throw new AsientoNoDisponibleException("El asiento no existe");
         }
@@ -60,5 +72,15 @@ public class Comunicador extends Aerolinea {
         );
 
         return this;
+    }
+
+    @Override
+    public boolean estaReservado(String codigoAsiento) {
+        try {
+            Aerolinea aerolineaProxy = detectarAerolinea(codigoAsiento);
+            return aerolineaProxy.estaReservado(codigoAsiento);
+        } catch (AsientoNoDisponibleException e) {
+            return true;
+        }
     }
 }
