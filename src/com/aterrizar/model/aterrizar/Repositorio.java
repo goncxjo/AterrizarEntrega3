@@ -28,7 +28,7 @@ public class Repositorio {
     public void comprar(VueloAsiento vueloAsiento, Usuario usuario) throws AsientoNoDisponibleException {
         String codigoAsiento = vueloAsiento.getAsiento().getCodigoAsiento();
 
-        comunicador.comprar(codigoAsiento);
+        comunicador.comprar(codigoAsiento, usuario.getDNI());
         usuario.comprar(vueloAsiento);
         eliminarSobreReservas(codigoAsiento);
     }

@@ -11,8 +11,9 @@ import com.aterrizar.model.usuario.Usuario;
 import com.aterrizar.model.vueloasiento.VueloAsiento;
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltro;
 import com.aterrizar.util.date.DateHelper;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public abstract class Aerolinea {
@@ -31,7 +32,7 @@ public abstract class Aerolinea {
 
     public List<VueloAsiento> getVueloAsientos() { return vueloAsientos; }
 
-    public void comprar(String codigoAsiento) throws AsientoNoDisponibleException{
+    public void comprar(String codigoAsiento, int dni) throws AsientoNoDisponibleException{
         getVueloAsiento(codigoAsiento).getVuelo().increasePopularidad();
     }
 
@@ -42,7 +43,7 @@ public abstract class Aerolinea {
         usuario.agregarFiltroAlHistorial(filtro);
 
         List asientosDisponibles = getAsientosDisponiblesPorAerolinea(filtro);
-
+        
         if(!asientosDisponibles.isEmpty()) {
             this.vueloAsientos = mapear(asientosDisponibles, filtro, usuario);
         }
@@ -53,33 +54,25 @@ public abstract class Aerolinea {
     protected abstract double getTiempoVuelo(Object asiento);
     
     protected abstract double getPopularidad(Object asiento);
+    
+    protected abstract List getAsientosDisponiblesPorAerolinea(VueloAsientoFiltro filtro);
 
-    public Aerolinea buscarSuperOfertas(Usuario usuario) {
-        for (VueloAsiento vueloAsiento : this.vueloAsientos) {
-            if (usuario.puedeVerSuperOferta(vueloAsiento.getAsiento())) {
-                vueloAsiento.getAsiento().marcarComoSuperOferta();
-            }
-        }
-
-        return this;
-    }
-
-    private void validarParametros(VueloAsientoFiltro filtro) throws ParametroVacioException {
+    protected void validarParametros(VueloAsientoFiltro filtro) throws ParametroVacioException {
         Destino origen = filtro.getOrigen();
         Destino destino = filtro.getDestino();
         String fecha = filtro.getFecha();
 
         if(origen == null) {
-            throw new ParametroVacioException("El origen no puede estar vacío");
+            throw new ParametroVacioException("El origen no puede estar vacio");
         }
         if(destino == null) {
-            throw new ParametroVacioException("El destino no puede estar vacío");
+            throw new ParametroVacioException("El destino no puede estar vacio");
         }
         if(fecha == null || fecha.equals("")) {
-            throw new ParametroVacioException("La fecha no puede estar vacía");
+            throw new ParametroVacioException("La fecha no puede estar vacia");
         }
     }
-
+    
     private List<VueloAsiento> mapear(List<Object> asientosDisponibles, VueloAsientoFiltro filtro, Usuario usuario) {
         return asientosDisponibles
                 .stream()
@@ -91,6 +84,18 @@ public abstract class Aerolinea {
                         )
                 )
                 .collect(Collectors.toList());
+    }
+
+    protected abstract Asiento generarAsiento(Object asiento, Usuario usuario);
+
+    public Aerolinea buscarSuperOfertas(Usuario usuario) {
+        for (VueloAsiento vueloAsiento : this.vueloAsientos) {
+            if (usuario.puedeVerSuperOferta(vueloAsiento.getAsiento())) {
+                vueloAsiento.getAsiento().marcarComoSuperOferta();
+            }
+        }
+
+        return this;
     }
 
     protected VueloAsiento getVueloAsiento(String codigoAsiento) throws AsientoNoDisponibleException {
@@ -113,14 +118,6 @@ public abstract class Aerolinea {
         this.vueloAsientos.sort(tipoOrden::sort);
 
         return this;
-    }
-
-    protected List getAsientosDisponiblesPorAerolinea(VueloAsientoFiltro filtro) {
-        return new ArrayList();
-    }
-
-    protected Asiento generarAsiento(Object asiento, Usuario usuario) {
-        return null;
     }
 
     public abstract boolean estaReservado(String codigoAsiento);

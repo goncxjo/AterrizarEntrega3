@@ -28,9 +28,9 @@ public class AerolineaLanchitaProxy extends Aerolinea {
     }
 
     @Override
-    public void comprar(String codigoAsiento) throws AsientoNoDisponibleException {
+    public void comprar(String codigoAsiento, int dni) throws AsientoNoDisponibleException {
         try {
-            super.comprar(codigoAsiento);
+            super.comprar(codigoAsiento, dni);
             this.aerolineaLanchita.comprar(codigoAsiento);
         } catch (AsientoLanchitaNoDisponibleException e) {
             throw new AsientoNoDisponibleException(this.nombre + ": " + e.getMessage());
