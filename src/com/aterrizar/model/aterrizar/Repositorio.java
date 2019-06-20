@@ -8,7 +8,6 @@ import com.aterrizar.model.vueloasiento.VueloAsiento;
 import com.aterrizar.util.asiento.ReservasHelper;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
