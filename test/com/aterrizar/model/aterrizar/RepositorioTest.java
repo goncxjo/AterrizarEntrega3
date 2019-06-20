@@ -3,18 +3,22 @@ package com.aterrizar.model.aterrizar;
 import com.aterrizar.exception.AsientoLanchitaYaReservadoException;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.aterrizar.enumerator.Destino;
 import com.aterrizar.enumerator.Ubicacion;
 import com.aterrizar.enumerator.asiento.Estado;
 import com.aterrizar.exception.AsientoNoDisponibleException;
+import com.aterrizar.exception.AsientoYaReservadoException;
 import com.aterrizar.model.Vuelo;
 import com.aterrizar.model.aerolinea.AerolineaLanchita;
 import com.aterrizar.model.aerolinea.AerolineaLanchitaProxy;
 import com.aterrizar.model.asiento.*;
 import com.aterrizar.model.usuario.*;
+import com.aterrizar.model.vueloasiento.Reserva;
 import com.aterrizar.model.vueloasiento.VueloAsiento;
+import com.aterrizar.util.asiento.ReservasHelper;
 import com.aterrizar.util.date.DateHelper;
 
 import static org.junit.Assert.*;
@@ -36,27 +40,111 @@ public class RepositorioTest {
 	}
 
 	@Test
-	public void reservar_AsientoDisponible_ReservaUnAsientoDisponible() throws AsientoNoDisponibleException, AsientoLanchitaYaReservadoException {
-	    String codigoAsiento = "LCH 005-40";
-
-		Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort)", 37422007);
+	public void reservar_ReservaUnAsientoDisponible() throws AsientoNoDisponibleException, AsientoLanchitaYaReservadoException {
+		Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort", 37422007);
 
 		VueloAsiento vueloAsiento = new VueloAsiento(
 				"Lanchita"
 				, "LCH"
 				, new Vuelo(Destino.EZE, Destino.MIA, DateHelper.parseToDate("13/05/2019"), 10.0, 5.0)
-				, new Ejecutivo(codigoAsiento, 50000, Ubicacion.Centro, Estado.Disponible)
+				, new Ejecutivo("LCH 005-40", 50000, Ubicacion.Centro, Estado.Disponible)
 				);
 
 		when(mockLanchita.estaReservado(anyString())).thenReturn(false);
-		boolean estaReservadoAntesDeReservar = repositorio.estaReservado(codigoAsiento);
+		boolean estaReservadoAntesDeReservar = repositorio.estaReservado(vueloAsiento.getAsiento().getCodigoAsiento());
 
 		doNothing().when(mockLanchita).reservar(anyObject(), anyString());
 		repositorio.reservar(vueloAsiento, usuario);
 
 		when(mockLanchita.estaReservado(anyString())).thenReturn(true);
-        boolean estaReservadoDespuesDeReservar = repositorio.estaReservado(codigoAsiento);
-
+        boolean estaReservadoDespuesDeReservar = repositorio.estaReservado(vueloAsiento.getAsiento().getCodigoAsiento());
+        
 		assertTrue("No se pudo reservar el asiento", !estaReservadoAntesDeReservar && estaReservadoDespuesDeReservar);
-    }
+	}
+	
+	
+	@Test
+	public void reservar_ReservaUnAsientoNoDisponible() throws AsientoNoDisponibleException, AsientoLanchitaYaReservadoException {
+		Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort", 37422007);
+
+		VueloAsiento vueloAsiento = new VueloAsiento(
+				"Lanchita"
+				, "LCH"
+				, new Vuelo(Destino.EZE, Destino.MIA, DateHelper.parseToDate("13/05/2019"), 10.0, 5.0)
+				, new Ejecutivo("LCH 005-40", 50000, Ubicacion.Centro, Estado.Reservado)
+				);
+		
+		Mockito.doThrow(AsientoYaReservadoException.class).when(mockLanchita).reservar(anyString(),anyString());
+		repositorio.reservar(vueloAsiento, usuario);
+		
+		assertTrue("No se pudo sobre reservar el asiento", !repositorio.getListaEspera(vueloAsiento.getAsiento().getCodigoAsiento()).isEmpty());
+	}
+	
+	
+	@Test
+	public void transferir_CaeLaReservaDeUnAsientoYEsTransferidaAlPrimeroDeLaListaDeEspera() throws AsientoLanchitaYaReservadoException, AsientoNoDisponibleException {
+		VueloAsiento vueloAsiento = new VueloAsiento(
+				"Lanchita"
+				, "LCH"
+				, new Vuelo(Destino.EZE, Destino.MIA, DateHelper.parseToDate("13/05/2019"), 10.0, 5.0)
+				, new Ejecutivo("LCH 005-40", 50000, Ubicacion.Centro, Estado.Disponible)
+				);
+		
+		Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort", 37422007);
+		when(mockLanchita.estaReservado(anyString())).thenReturn(false);
+		doNothing().when(mockLanchita).reservar(anyObject(), anyString());
+		repositorio.reservar(vueloAsiento, usuario);
+		when(mockLanchita.estaReservado(anyString())).thenReturn(true);
+		
+		Usuario usuario2 = new Estandar("Jessica", "Jones", 30303456);
+		Mockito.doThrow(AsientoYaReservadoException.class).when(mockLanchita).reservar(anyString(),anyString());
+		repositorio.reservar(vueloAsiento, usuario2);
+		
+		Reserva asientoReservado = new Reserva(vueloAsiento.getAsiento().getCodigoAsiento(), usuario);
+		
+		boolean listaDeEsperaAntesDeTransferir = repositorio.getListaEspera(vueloAsiento.getAsiento().getCodigoAsiento()).isEmpty();
+		
+		ReservasHelper mockitoReservasHelper = Mockito.mock(ReservasHelper.class);
+		when(mockitoReservasHelper.expiro(asientoReservado)).thenReturn(true);
+		
+		//repositorio.verificarReservasExpiradas();
+		repositorio.transferir(asientoReservado);
+		
+		boolean listaDeEsperaDespuesDeTransferir = repositorio.getListaEspera(vueloAsiento.getAsiento().getCodigoAsiento()).isEmpty();	
+		
+		assertTrue("No se pudo transferir la reserva", !listaDeEsperaAntesDeTransferir && listaDeEsperaDespuesDeTransferir);
+	}
+	
+	
+	@Test
+	public void transferir_CaeLaReservaDeUnAsientoYLaListaDeEsperaEstaVacia() throws AsientoLanchitaYaReservadoException, AsientoNoDisponibleException {
+		VueloAsiento vueloAsiento = new VueloAsiento(
+				"Lanchita"
+				, "LCH"
+				, new Vuelo(Destino.EZE, Destino.MIA, DateHelper.parseToDate("13/05/2019"), 10.0, 5.0)
+				, new Ejecutivo("LCH 005-40", 50000, Ubicacion.Centro, Estado.Disponible)
+				);
+		
+		Usuario usuario = new Estandar("Ricardo \"EL COMANDANTE\"", "Fort", 37422007);
+		when(mockLanchita.estaReservado(anyString())).thenReturn(false);
+		doNothing().when(mockLanchita).reservar(anyObject(), anyString());
+		repositorio.reservar(vueloAsiento, usuario);
+		when(mockLanchita.estaReservado(anyString())).thenReturn(true);
+		System.out.println ("usuario con reserva " + usuario.getReservas().get(0).getCodigoAsiento());
+		Reserva asientoReservado = new Reserva(vueloAsiento.getAsiento().getCodigoAsiento(), usuario);
+		
+		boolean estaReservadoAntesDeTransferir = repositorio.estaReservado(vueloAsiento.getAsiento().getCodigoAsiento());
+		
+		ReservasHelper mockitoReservasHelper  =  Mockito.mock(ReservasHelper.class);
+		when(mockitoReservasHelper.expiro(asientoReservado)).thenReturn(true);
+		when(mockLanchita.estaReservado(anyString())).thenReturn(false);
+		
+		//repositorio.verificarReservasExpiradas();
+		repositorio.transferir(asientoReservado);
+		
+		boolean estaReservadoDespuesDeTransferir = repositorio.estaReservado(vueloAsiento.getAsiento().getCodigoAsiento());
+		
+		assertTrue("La reserva fue transferida correctamente", estaReservadoAntesDeTransferir && !estaReservadoDespuesDeTransferir);
+	}
+
 }

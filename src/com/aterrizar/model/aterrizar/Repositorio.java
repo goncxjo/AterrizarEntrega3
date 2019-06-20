@@ -18,7 +18,7 @@ public class Repositorio {
     private List<Reserva> listaEspera =  new ArrayList<>();
     private List<Usuario> usuarios = new ArrayList<>();
     private ReservasHelper reservasHelper;
-
+    
     public Repositorio(Comunicador comunicador) {
         this.comunicador = comunicador;
     }
@@ -35,12 +35,12 @@ public class Repositorio {
 
     public void reservar(VueloAsiento vueloAsiento, Usuario usuario) throws AsientoNoDisponibleException {
         String codigoAsiento = vueloAsiento.getAsiento().getCodigoAsiento();
-
         try {
             comunicador.reservar(codigoAsiento, usuario.getDNI());
             usuario.reservar(codigoAsiento);
         } catch (AsientoYaReservadoException e) {
             agregarSobreReserva(vueloAsiento, usuario);
+            usuario.reservar(codigoAsiento);
         }
     }
 
@@ -55,6 +55,10 @@ public class Repositorio {
     private void agregarSobreReserva(VueloAsiento vueloAsiento, Usuario usuario) {
         listaEspera.add(new Reserva(vueloAsiento.getAsiento().getCodigoAsiento(), usuario));
     }
+    
+    private void eliminarSobreReserva(Reserva reserva) {
+        listaEspera.removeIf(x -> x.getCodigoAsiento().equals(reserva.getCodigoAsiento()));
+    }
 
     private void eliminarSobreReservas(String codigoAsiento) {
         listaEspera.removeAll(getListaEspera(codigoAsiento));
@@ -68,6 +72,7 @@ public class Repositorio {
             Reserva reservaEnEspera = listaEsperaPorCodigoAsiento.get(0);
             Usuario otroUsuario = reservaEnEspera.getUsuario();
             usuario.transferir(reserva, otroUsuario);
+            eliminarSobreReserva(reserva);
         } else {
             usuario.eliminar(reserva);
         }
