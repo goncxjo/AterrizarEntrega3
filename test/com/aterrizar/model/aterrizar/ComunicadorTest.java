@@ -22,7 +22,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
@@ -64,6 +64,7 @@ public class ComunicadorTest {
 
 	@Test
 	public void comprarAsiento_UnUsuarioCompraUnAsiento() throws AsientoNoDisponibleException, ParametroVacioException {
+				
 		when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
 				.thenReturn(Arrays.asList(
 						Arrays.asList("LCH 344-46","400.00","T","V","D", "15.0", "0.0")
@@ -76,9 +77,10 @@ public class ComunicadorTest {
 			AerolineaLanchitaProxy aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
 			this.comunicador = new Comunicador(aerolineaLanchitaProxy);
 			return null;
-		}).when(mockLanchita).comprar(anyString());
-
+		}).when(mockLanchita).comprar(anyObject());
+		
 		Usuario usuario = new NoRegistrado("Ricardo \"EL COMANDANTE\"", "Fort", 37422007);
+		
 		VueloAsientoFiltro filtro = new VueloAsientoFiltroBuilder()
 				.agregarOrigen(Destino.BUE)
 				.agregarDestino(Destino.MIA)
@@ -86,13 +88,13 @@ public class ComunicadorTest {
 				.agregarTipoAsiento(new Turista())
 				.agregarUbicacion(Ubicacion.Ventanilla)
 				.build();
-
+		
 		VueloAsiento vueloAsiento = comunicador
 				.filtrarAsientos(filtro, usuario)
 				.getVueloAsientos()
 				.get(0);
-
-		this.comunicador.comprar(vueloAsiento.getAsiento().getCodigoAsiento(), usuario.getDNI());
+		
+		this.comunicador.comprar(vueloAsiento, usuario);
 
 		List<VueloAsiento> asientosLuegoDeComprar = comunicador
 				.filtrarAsientos(filtro, usuario)
@@ -103,6 +105,7 @@ public class ComunicadorTest {
 
 	@Test
 	public void comprar_Usuario_ReservaUnAsientoDisponibleYSeEliminaDelVuelo() throws AsientoNoDisponibleException, ParametroVacioException {
+		
 		doAnswer(invocationOnMock -> {
 			when(mockLanchita.asientosDisponibles(anyString(), anyString(), anyString(), anyString()))
 					.thenAnswer(i -> Arrays.asList());
@@ -110,9 +113,10 @@ public class ComunicadorTest {
 			AerolineaLanchitaProxy aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
 			this.comunicador = new Comunicador(aerolineaLanchitaProxy);
 			return null;
-		}).when(mockLanchita).comprar(anyString());
-
+		}).when(mockLanchita).comprar(anyObject());
+		
 		Usuario usuario = new NoRegistrado("Ricardo \"EL COMANDANTE\"", "Fort", 37422007);
+		
 		VueloAsientoFiltro filtro = new VueloAsientoFiltroBuilder()
 				.agregarOrigen(Destino.BUE)
 				.agregarDestino(Destino.MIA)
@@ -120,12 +124,17 @@ public class ComunicadorTest {
 				.agregarTipoAsiento(new Turista())
 				.agregarUbicacion(Ubicacion.Ventanilla)
 				.build();
+		
+		VueloAsiento vueloAsiento = comunicador
+				.filtrarAsientos(filtro, usuario)
+				.getVueloAsientos()
+				.get(0);
 
 		List<VueloAsiento> vueloAsientosAntesDeComprar = comunicador
 				.filtrarAsientos(filtro, usuario)
 				.getVueloAsientos();
 
-		comunicador.comprar("LCH 344-42", usuario.getDNI());
+		comunicador.comprar(vueloAsiento, usuario);
 
 		List<VueloAsiento> vueloAsientosDespuesDeComprar = comunicador
 				.filtrarAsientos(filtro, usuario)

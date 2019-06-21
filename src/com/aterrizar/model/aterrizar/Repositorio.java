@@ -27,15 +27,16 @@ public class Repositorio {
     public void comprar(VueloAsiento vueloAsiento, Usuario usuario) throws AsientoNoDisponibleException {
         String codigoAsiento = vueloAsiento.getAsiento().getCodigoAsiento();
 
-        comunicador.comprar(codigoAsiento, usuario.getDNI());
+        comunicador.comprar(vueloAsiento, usuario);
         usuario.comprar(vueloAsiento);
         eliminarSobreReservas(codigoAsiento);
     }
 
     public void reservar(VueloAsiento vueloAsiento, Usuario usuario) throws AsientoNoDisponibleException {
-        String codigoAsiento = vueloAsiento.getAsiento().getCodigoAsiento();
+    	String codigoAsiento = vueloAsiento.getAsiento().getCodigoAsiento();
+    	
         try {
-            comunicador.reservar(codigoAsiento, usuario.getDNI());
+            comunicador.reservar(vueloAsiento, usuario);
             usuario.reservar(codigoAsiento);
         } catch (AsientoYaReservadoException e) {
             agregarSobreReserva(vueloAsiento, usuario);

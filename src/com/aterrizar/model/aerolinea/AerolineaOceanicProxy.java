@@ -5,7 +5,7 @@ import com.aterrizar.enumerator.asiento.Estado;
 import com.aterrizar.exception.*;
 import com.aterrizar.model.asiento.*;
 import com.aterrizar.model.usuario.Usuario;
-
+import com.aterrizar.model.vueloasiento.VueloAsiento;
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltro;
 
 
@@ -83,7 +83,10 @@ public class AerolineaOceanicProxy extends Aerolinea {
     }
 
 	@Override
-    public void comprar(String codigoAsiento, int dni) throws AsientoNoDisponibleException {
+    public void comprar(VueloAsiento vueloAsiento, Usuario usuario) throws AsientoNoDisponibleException {
+		int dni = usuario.getDNI();
+		String codigoAsiento = vueloAsiento.getAsiento().getCodigoAsiento();
+		
         try {
             this.aerolineaOceanic.comprarSiHayDisponibilidad(getDniFormateado(dni),
                                                              getCodigoVuelo(codigoAsiento),
@@ -94,10 +97,11 @@ public class AerolineaOceanicProxy extends Aerolinea {
     }
 
     @Override
-    public void reservar(String codigoAsiento, int dni) throws AsientoYaReservadoException{
+    public void reservar(VueloAsiento vueloAsiento, Usuario usuario) throws AsientoYaReservadoException{
+    	String codigoAsiento = vueloAsiento.getAsiento().getCodigoAsiento();
 
         //Se comprueba si no se puede reservar
-       if(!aerolineaOceanic.reservar(getDniFormateado(dni),
+       if(!aerolineaOceanic.reservar(getDniFormateado(usuario.getDNI()),
                                      getCodigoVuelo(codigoAsiento),
                                      getNumeroDeAsiento(codigoAsiento))){
            //Se dispara excepcion informando asiento ya reservado

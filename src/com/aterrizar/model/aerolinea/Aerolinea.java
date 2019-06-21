@@ -32,11 +32,11 @@ public abstract class Aerolinea {
 
     public List<VueloAsiento> getVueloAsientos() { return vueloAsientos; }
 
-    public void comprar(String codigoAsiento, int dni) throws AsientoNoDisponibleException{
-        getVueloAsiento(codigoAsiento).getVuelo().increasePopularidad();
+    public void comprar(VueloAsiento vueloAsiento, Usuario usuario) throws AsientoNoDisponibleException{
+        vueloAsiento.getVuelo().increasePopularidad();
     }
 
-    public abstract void reservar(String codigoAsiento, int dni) throws AsientoYaReservadoException, AsientoNoDisponibleException;
+    public abstract void reservar(VueloAsiento vueloAsiento, Usuario usuario) throws AsientoYaReservadoException, AsientoNoDisponibleException;
 
     public Aerolinea filtrarAsientos(VueloAsientoFiltro filtro, Usuario usuario) throws ParametroVacioException {
         validarParametros(filtro);

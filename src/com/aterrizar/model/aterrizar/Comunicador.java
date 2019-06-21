@@ -7,6 +7,7 @@ import com.aterrizar.model.aerolinea.Aerolinea;
 import com.aterrizar.model.aerolinea.AerolineaLanchitaProxy;
 import com.aterrizar.model.asiento.Asiento;
 import com.aterrizar.model.usuario.Usuario;
+import com.aterrizar.model.vueloasiento.VueloAsiento;
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltro;
 
 import java.util.List;
@@ -24,15 +25,17 @@ public class Comunicador extends Aerolinea {
     }
 
     @Override
-    public void comprar(String codigoAsiento, int dni) throws AsientoNoDisponibleException {
+    public void comprar(VueloAsiento vueloAsiento, Usuario usuario) throws AsientoNoDisponibleException {
+		String codigoAsiento = vueloAsiento.getAsiento().getCodigoAsiento();
         Aerolinea aerolineaProxy = detectarAerolinea(codigoAsiento);
-        aerolineaProxy.comprar(codigoAsiento, dni);
+        aerolineaProxy.comprar(vueloAsiento, usuario);
     }
 
     @Override
-    public void reservar(String codigoAsiento, int dni) throws AsientoYaReservadoException, AsientoNoDisponibleException {
+    public void reservar(VueloAsiento vueloAsiento, Usuario usuario) throws AsientoYaReservadoException, AsientoNoDisponibleException {
+		String codigoAsiento = vueloAsiento.getAsiento().getCodigoAsiento();
         Aerolinea aerolineaProxy = detectarAerolinea(codigoAsiento);
-        aerolineaProxy.reservar(codigoAsiento, dni);
+        aerolineaProxy.reservar(vueloAsiento, usuario);
     }
 
     private Aerolinea detectarAerolinea(String codigoAsiento) throws AsientoNoDisponibleException {

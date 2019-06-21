@@ -8,6 +8,7 @@ import com.aterrizar.exception.AsientoYaReservadoException;
 import com.aterrizar.model.asiento.*;
 import com.aterrizar.enumerator.Ubicacion;
 import com.aterrizar.model.usuario.Usuario;
+import com.aterrizar.model.vueloasiento.VueloAsiento;
 import com.aterrizar.model.vueloasiento.VueloAsientoFiltro;
 
 import java.util.*;
@@ -28,19 +29,19 @@ public class AerolineaLanchitaProxy extends Aerolinea {
     }
 
     @Override
-    public void comprar(String codigoAsiento, int dni) throws AsientoNoDisponibleException {
+    public void comprar(VueloAsiento vueloAsiento, Usuario usuario) throws AsientoNoDisponibleException {
         try {
-            super.comprar(codigoAsiento, dni);
-            this.aerolineaLanchita.comprar(codigoAsiento);
+            super.comprar(vueloAsiento, usuario);
+            this.aerolineaLanchita.comprar(vueloAsiento);
         } catch (AsientoLanchitaNoDisponibleException e) {
             throw new AsientoNoDisponibleException(this.nombre + ": " + e.getMessage());
         }
     }
 
     @Override
-    public void reservar(String codigoAsiento, int dni) throws AsientoYaReservadoException {
+    public void reservar(VueloAsiento vueloAsiento, Usuario usuario) throws AsientoYaReservadoException {    	
         try {
-            this.aerolineaLanchita.reservar(codigoAsiento, Integer.toString(dni));
+            this.aerolineaLanchita.reservar(vueloAsiento, Integer.toString(usuario.getDNI()));
         } catch(AsientoLanchitaYaReservadoException e){
             throw new AsientoYaReservadoException(this.nombre + ": " + "El asiento ya se encuentra reservado");
         }
