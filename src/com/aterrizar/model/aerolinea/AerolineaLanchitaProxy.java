@@ -32,7 +32,7 @@ public class AerolineaLanchitaProxy extends Aerolinea {
     public void comprar(VueloAsiento vueloAsiento, Usuario usuario) throws AsientoNoDisponibleException {
         try {
             super.comprar(vueloAsiento, usuario);
-            this.aerolineaLanchita.comprar(vueloAsiento);
+            this.aerolineaLanchita.comprar(vueloAsiento.getAsiento().getCodigoAsiento());
         } catch (AsientoLanchitaNoDisponibleException e) {
             throw new AsientoNoDisponibleException(this.nombre + ": " + e.getMessage());
         }
@@ -41,7 +41,7 @@ public class AerolineaLanchitaProxy extends Aerolinea {
     @Override
     public void reservar(VueloAsiento vueloAsiento, Usuario usuario) throws AsientoYaReservadoException {    	
         try {
-            this.aerolineaLanchita.reservar(vueloAsiento, Integer.toString(usuario.getDNI()));
+            this.aerolineaLanchita.reservar(vueloAsiento.getAsiento().getCodigoAsiento(), Integer.toString(usuario.getDNI()));
         } catch(AsientoLanchitaYaReservadoException e){
             throw new AsientoYaReservadoException(this.nombre + ": " + "El asiento ya se encuentra reservado");
         }

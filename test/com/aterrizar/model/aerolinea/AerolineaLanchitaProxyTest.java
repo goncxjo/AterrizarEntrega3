@@ -150,7 +150,7 @@ public class AerolineaLanchitaProxyTest {
                     .thenAnswer(i -> Arrays.asList());
             this.aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
             return null;
-        }).when(mockLanchita).comprar(vueloAsiento);
+        }).when(mockLanchita).comprar(anyString());
 
         List<VueloAsiento> vueloAsientosAntesDeComprar = aerolineaLanchitaProxy
                 .filtrarAsientos(filtro, usuario)
@@ -195,7 +195,7 @@ public class AerolineaLanchitaProxyTest {
                     .thenAnswer(i -> Arrays.asList());
             this.aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
             return null;
-        }).when(mockLanchita).comprar(vueloAsiento);
+        }).when(mockLanchita).comprar(anyString());
 
         
 
@@ -272,7 +272,7 @@ public class AerolineaLanchitaProxyTest {
 
         Double[] listaEsperada = { 2000.0, 1000.0, 500.0, 400.0, 400.0 };
         for (int i = 0; i < vueloAsientos.size(); i++) {
-            assertTrue("Los asientos no se han ordenado por precio de forma descendente.", listaEsperada[i].equals(vueloAsientos.get(i).getAsiento().getPrecio()));
+            assertEquals("Los asientos no se han ordenado por precio de forma descendente.", listaEsperada[i], vueloAsientos.get(i).getAsiento().getPrecio(), 0.0);
         }
     }
 
@@ -304,7 +304,7 @@ public class AerolineaLanchitaProxyTest {
 
         Double[] listaEsperada = { 400.0, 400.0, 500.0, 1000.0, 2000.0 };
         for (int i = 0; i < vueloAsientos.size(); i++) {
-            assertTrue("Los asientos no se han ordenado por precio de forma ascendente.", listaEsperada[i].equals(vueloAsientos.get(i).getAsiento().getPrecio()));
+            assertEquals("Los asientos no se han ordenado por precio de forma ascendente.", listaEsperada[i], vueloAsientos.get(i).getAsiento().getPrecio(), 0.0);
         }
     }
     
@@ -336,7 +336,7 @@ public class AerolineaLanchitaProxyTest {
 
         Double[] listaEsperada = { 10.0, 11.0, 12.0, 13.0, 18.0 };
         for (int i = 0; i < vueloAsientos.size(); i++) {
-            assertTrue("Los asientos no se han ordenado por tiempo de vuelo.", listaEsperada[i].equals(vueloAsientos.get(i).getVuelo().getTiempoVuelo()));
+            assertEquals("Los asientos no se han ordenado por tiempo de vuelo.", listaEsperada[i], vueloAsientos.get(i).getVuelo().getTiempoVuelo());
         }
     }
     
@@ -378,7 +378,7 @@ public class AerolineaLanchitaProxyTest {
 	                ));
             this.aerolineaLanchitaProxy = new AerolineaLanchitaProxy(mockLanchita);
             return null;
-        }).when(mockLanchita).comprar(vueloAsiento);
+        }).when(mockLanchita).comprar(anyString());
         
         this.aerolineaLanchitaProxy.comprar(vueloAsiento, usuario);
         
@@ -390,7 +390,7 @@ public class AerolineaLanchitaProxyTest {
         Double[] listaEsperada = { 1.0, 0.0, 0.0, 0.0};
         
         for (int i = 0; i < vueloAsientosOrdenadosPorPopularidad.size(); i++) {
-        	assertTrue("Los asientos no se han ordenado por popularidad.", listaEsperada[i].equals(vueloAsientosOrdenadosPorPopularidad.get(i).getVuelo().getPopularidad()));
+            assertEquals("Los asientos no se han ordenado por popularidad.", listaEsperada[i], vueloAsientosOrdenadosPorPopularidad.get(i).getVuelo().getPopularidad());
         }
     }
     
